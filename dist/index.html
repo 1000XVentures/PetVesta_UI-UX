@@ -1,13 +1,2381 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>PetVesta</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" crossorigin src="/assets/index-Bv1K1MnR.js"></script>
-  </head>
-  <body style="margin:0;">
-    <div id="root"></div>
-  </body>
-  </html>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PetVesta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet"/>
+<style>
+/* ── TOKENS ─────────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #F8F4EF;
+  --surface:     #FFFFFF;
+  --surface-2:   #F2EDE7;
+  --surface-3:   #EDE6DD;
+  --border:      #E4DDD4;
+  --border-2:    #D9D0C5;
+  --tx:          #1C1814;
+  --tx2:         #7A7068;
+  --tx3:         #B0A89E;
+  --accent:      #E85419;
+  --accent-d:    #C94510;
+  --accent-l:    #FDF1EC;
+  --accent-m:    #F9D9C8;
+  --green:       #1A6B3C;
+  --green-l:     #EBF7F1;
+  --red:         #C13232;
+  --red-l:       #FEF0F0;
+  --red-m:       #F9CECE;
+  --gold:        #A0620A;
+  --gold-l:      #FEF8EC;
+  --shadow-sm:   0 2px 12px rgba(28,24,20,.06);
+  --shadow-md:   0 8px 32px rgba(28,24,20,.10);
+  --shadow-lg:   0 20px 60px rgba(28,24,20,.16);
+  --r-sm:        10px;
+  --r-md:        16px;
+  --r-lg:        22px;
+  --r-xl:        28px;
+  --font-display:'Sora', sans-serif;
+  --font-body:   'DM Sans', sans-serif;
+}
 
+/* ── RESET ──────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0D0D0D;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+button{cursor:pointer;border:none;background:none;font-family:var(--font-body)}
+input,select,textarea{font-family:var(--font-body);outline:none}
+::-webkit-scrollbar{display:none}
+a{text-decoration:none;color:inherit}
+
+/* ── PHONE SHELL ────────────────────────────────────────────────────────── */
+.phone-wrap{padding:24px 0}
+.phone{
+  width:393px;height:852px;
+  background:var(--bg);
+  border-radius:52px;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 0 2px #2A2A2A, 0 0 0 4px #1A1A1A, var(--shadow-lg);
+}
+.notch{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:126px;height:36px;
+  background:#0D0D0D;border-radius:0 0 20px 20px;
+  z-index:999;
+}
+.status-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 28px 0;height:48px;position:relative;z-index:10;
+}
+.status-time{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-.3px}
+.status-icons{display:flex;align-items:center;gap:6px}
+.status-bar.light .status-time,.status-bar.light .status-icons svg path,.status-bar.light .status-icons svg rect{fill:#fff !important;color:#fff}
+
+/* ── SCREENS ────────────────────────────────────────────────────────────── */
+.screen{
+  position:absolute;inset:0;
+  background:var(--bg);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .38s cubic-bezier(.4,0,.2,1), opacity .38s ease;
+  opacity:0;
+  pointer-events:none;
+}
+.screen.active{transform:translateX(0);opacity:1;pointer-events:all}
+.screen.slide-left{transform:translateX(-25%);opacity:.4}
+.screen-body{flex:1;overflow-y:auto;overflow-x:hidden}
+.screen-body::-webkit-scrollbar{display:none}
+
+/* ── TOP BAR ────────────────────────────────────────────────────────────── */
+.top-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 20px 12px;background:var(--surface);
+  position:relative;z-index:10;
+}
+.top-bar.transparent{background:transparent}
+.back-btn{
+  width:38px;height:38px;border-radius:12px;
+  background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0;
+}
+.back-btn:active{transform:scale(.93);background:var(--surface-3)}
+.top-title{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--tx);letter-spacing:-.3px}
+.top-right{display:flex;gap:8px;align-items:center}
+
+/* ── BOTTOM NAV ─────────────────────────────────────────────────────────── */
+.bottom-nav{
+  position:absolute;bottom:0;left:0;right:0;
+  height:80px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  display:flex;align-items:flex-start;padding-top:10px;
+  z-index:50;
+}
+.nav-tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:0;transition:all .2s;
+}
+.nav-tab:active{opacity:.7}
+.nav-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative}
+.nav-label{font-size:10px;font-weight:500;color:var(--tx3);transition:color .2s;letter-spacing:.1px}
+.nav-tab.active .nav-label{color:var(--accent);font-weight:700}
+.nav-badge{
+  position:absolute;top:-3px;right:-3px;
+  width:8px;height:8px;border-radius:4px;
+  background:var(--red);border:2px solid var(--surface);
+}
+
+/* ── BUTTONS ────────────────────────────────────────────────────────────── */
+.btn{
+  width:100%;padding:15px 24px;border-radius:14px;
+  font-size:15px;font-weight:700;font-family:var(--font-body);
+  transition:all .15s;letter-spacing:-.1px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-d)}
+.btn-primary:disabled{background:var(--tx3);cursor:not-allowed;transform:none}
+.btn-dark{background:var(--tx);color:#fff}
+.btn-dark:hover{background:#2D2520}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--tx)}
+.btn-ghost{background:transparent;color:var(--accent);padding:10px 16px;width:auto}
+.btn-sm{padding:10px 18px;font-size:13px;border-radius:10px;width:auto}
+
+/* ── CARDS ──────────────────────────────────────────────────────────────── */
+.card{background:var(--surface);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-sm)}
+.card-pressable{cursor:pointer;transition:all .15s}
+.card-pressable:active{transform:scale(.98);box-shadow:var(--shadow-sm)}
+
+/* ── INPUT ──────────────────────────────────────────────────────────────── */
+.input-wrap{margin-bottom:16px}
+.input-label{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:6px;display:block;letter-spacing:-.1px}
+.input-field{
+  width:100%;padding:13px 16px;border-radius:12px;
+  border:1.5px solid var(--border);
+  font-size:15px;color:var(--tx);background:var(--surface);
+  transition:border-color .15s;
+}
+.input-field:focus{border-color:var(--accent)}
+.input-field::placeholder{color:var(--tx3)}
+
+/* ── CHIPS ──────────────────────────────────────────────────────────────── */
+.chip{
+  padding:8px 16px;border-radius:100px;
+  border:1.5px solid var(--border);
+  background:var(--surface);color:var(--tx);
+  font-size:13px;font-weight:500;
+  white-space:nowrap;transition:all .15s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.chip:active{transform:scale(.95)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.chip.active svg{stroke:#fff}
+
+/* ── PILL TOGGLE ────────────────────────────────────────────────────────── */
+.pill-group{display:flex;flex-wrap:wrap;gap:8px}
+.pill{
+  padding:9px 18px;border-radius:100px;
+  border:1.5px solid var(--border);
+  background:var(--surface);color:var(--tx);
+  font-size:13px;font-weight:500;
+  transition:all .15s;cursor:pointer;
+}
+.pill:active{transform:scale(.95)}
+.pill.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.pill-group.large .pill{font-size:14px;padding:11px 22px}
+
+/* ── DIVIDER ────────────────────────────────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* ── MODAL OVERLAY ──────────────────────────────────────────────────────── */
+.modal-overlay{
+  position:absolute;inset:0;
+  background:rgba(28,24,20,.55);
+  z-index:200;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
+  backdrop-filter:blur(2px);
+}
+.modal-overlay.visible{opacity:1;pointer-events:all}
+.modal-sheet{
+  background:var(--surface);
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:0 0 36px;
+  transform:translateY(100%);
+  transition:transform .38s cubic-bezier(.4,0,.2,1);
+  max-height:92%;
+  overflow-y:auto;
+}
+.modal-overlay.visible .modal-sheet{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:var(--border-2);border-radius:2px;margin:10px auto 0}
+
+/* ── TAG BADGES ─────────────────────────────────────────────────────────── */
+.tag{font-size:11px;padding:4px 10px;border-radius:100px;font-weight:600;white-space:nowrap}
+.tag-neutral{background:var(--surface-2);color:var(--tx2)}
+.tag-green{background:var(--green-l);color:var(--green)}
+.tag-red{background:var(--red-l);color:var(--red)}
+.tag-orange{background:var(--accent-l);color:var(--accent)}
+.tag-gold{background:var(--gold-l);color:var(--gold)}
+
+/* ── STAR RATING ────────────────────────────────────────────────────────── */
+.star{cursor:pointer;transition:transform .1s}
+.star:active{transform:scale(1.2)}
+
+/* ── AVATAR ─────────────────────────────────────────────────────────────── */
+.avatar{
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;flex-shrink:0;
+}
+
+/* ── SECTION LABEL ──────────────────────────────────────────────────────── */
+.section-label{
+  font-size:11px;font-weight:700;color:var(--tx3);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;
+}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--tx);letter-spacing:-.3px}
+.view-all{font-size:13px;font-weight:600;color:var(--accent)}
+
+/* ── VERIFY BADGE ───────────────────────────────────────────────────────── */
+.verify-dot{
+  width:18px;height:18px;background:var(--green);border-radius:9px;
+  border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── ANIMATIONS ─────────────────────────────────────────────────────────── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.fade-in{animation:fadeIn .4s ease both}
+.pulse{animation:pulse 2s ease infinite}
+.stagger-1{animation-delay:.05s}
+.stagger-2{animation-delay:.1s}
+.stagger-3{animation-delay:.15s}
+.stagger-4{animation-delay:.2s}
+
+/* ── SITTER CARD ────────────────────────────────────────────────────────── */
+.sitter-card{
+  background:var(--surface);border-radius:var(--r-lg);
+  padding:16px;margin-bottom:12px;
+  box-shadow:var(--shadow-sm);
+  cursor:pointer;transition:all .15s;
+  display:flex;gap:14px;
+}
+.sitter-card:active{transform:scale(.98);box-shadow:none}
+.sitter-info{flex:1;min-width:0}
+.sitter-name-row{display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.sitter-name{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-.2px}
+.sitter-sub{font-size:12px;color:var(--tx2);margin-bottom:6px}
+.sitter-rating{display:flex;align-items:center;gap:4px;margin-bottom:7px}
+.sitter-tags{display:flex;gap:6px;flex-wrap:wrap}
+.sitter-price-col{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;flex-shrink:0}
+.sitter-price{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--tx);letter-spacing:-.4px}
+.sitter-per{font-size:11px;color:var(--tx3)}
+
+/* ── ORDER CARD ─────────────────────────────────────────────────────────── */
+.order-card{
+  background:var(--surface);border-radius:var(--r-lg);
+  padding:16px;margin-bottom:12px;
+  box-shadow:var(--shadow-sm);cursor:pointer;transition:all .15s;
+}
+.order-card:active{transform:scale(.99)}
+.order-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.order-status{display:flex;align-items:center;gap:6px}
+.status-dot{width:7px;height:7px;border-radius:4px}
+
+/* ── SERVICE BROWSE CARD ────────────────────────────────────────────────── */
+.service-browse-card{
+  background:var(--surface);border-radius:var(--r-lg);
+  overflow:hidden;cursor:pointer;transition:all .15s;
+  box-shadow:var(--shadow-sm);
+}
+.service-browse-card:active{transform:scale(.98)}
+.service-browse-img{height:100px;position:relative;overflow:hidden}
+.service-browse-body{padding:14px}
+
+/* ── PROGRESS STEPS ─────────────────────────────────────────────────────── */
+.progress-step{display:flex;gap:14px;margin-bottom:4px}
+.step-line-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.step-dot{width:28px;height:28px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-connector{width:2px;flex:1;min-height:28px;margin:4px 0}
+
+/* ── CHAT ───────────────────────────────────────────────────────────────── */
+.chat-bubble{
+  max-width:78%;padding:11px 14px;border-radius:18px;
+  font-size:14px;line-height:1.55;margin-bottom:8px;
+}
+.chat-bubble.out{
+  background:var(--accent);color:#fff;
+  border-bottom-right-radius:4px;
+  align-self:flex-end;margin-left:auto;
+}
+.chat-bubble.in{
+  background:var(--surface);color:var(--tx);
+  border-bottom-left-radius:4px;
+  box-shadow:var(--shadow-sm);
+}
+.chat-time{font-size:10px;color:var(--tx3);margin-bottom:14px;display:block}
+.chat-time.out{text-align:right}
+
+/* ── PROFILE ────────────────────────────────────────────────────────────── */
+.profile-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 0;border-bottom:1px solid var(--border);
+}
+.profile-row:last-child{border-bottom:none}
+
+/* ── PRICETAG ───────────────────────────────────────────────────────────── */
+.price-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.price-row:last-child{border-bottom:none}
+
+/* ── ADDON CARD ─────────────────────────────────────────────────────────── */
+.addon-card{
+  border:1.5px solid var(--border);border-radius:14px;
+  padding:13px 14px;display:flex;justify-content:space-between;align-items:center;
+  cursor:pointer;transition:all .15s;margin-bottom:10px;
+}
+.addon-card.selected{border-color:var(--accent);background:var(--accent-l)}
+.addon-check{width:24px;height:24px;border-radius:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.addon-check.on{background:var(--accent)}
+.addon-check.off{background:var(--surface-2)}
+
+/* ── DISCOVER HEADER ────────────────────────────────────────────────────── */
+.discover-header{background:var(--surface);padding:0 20px 0;position:relative;z-index:10}
+.location-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;background:var(--surface-2);border-radius:12px;
+  cursor:pointer;transition:all .15s;margin-bottom:12px;
+}
+.location-bar:active{background:var(--surface-3)}
+
+/* ── DATE PICKER ROW ────────────────────────────────────────────────────── */
+.date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.date-btn{
+  padding:11px 14px;background:var(--surface-2);
+  border-radius:12px;border:1.5px solid var(--border);
+  display:flex;flex-direction:column;align-items:flex-start;
+  cursor:pointer;transition:all .15s;
+}
+.date-btn:active{background:var(--surface-3)}
+.date-btn.has-value{border-color:var(--accent);background:var(--accent-l)}
+.date-label{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.date-value{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--tx)}
+.date-placeholder{font-size:13px;color:var(--tx3)}
+
+/* ── HERO BANNER ────────────────────────────────────────────────────────── */
+.hero-banner{
+  margin:16px 20px;border-radius:var(--r-xl);
+  overflow:hidden;position:relative;min-height:140px;
+  background:linear-gradient(140deg, #1C1814 0%, #2E1E12 100%);
+}
+.hero-inner{padding:22px 20px 20px;position:relative;z-index:2}
+.hero-glow{
+  position:absolute;right:-20px;bottom:-20px;
+  width:160px;height:160px;
+  background:radial-gradient(circle, rgba(232,84,25,.35) 0%, transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.hero-accent-circle{
+  position:absolute;right:20px;top:-15px;
+  width:90px;height:90px;
+  border-radius:50%;
+  background:linear-gradient(135deg, rgba(232,84,25,.2) 0%, rgba(232,84,25,.05) 100%);
+  border:1px solid rgba(232,84,25,.15);
+}
+
+/* ── PET TRIGGER ────────────────────────────────────────────────────────── */
+.pet-trigger{
+  background:var(--red-l);border-radius:14px;
+  border:1.5px dashed var(--red-m);
+  padding:14px 16px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:all .15s;
+}
+.pet-trigger:active{background:#fde9e9}
+
+/* ── LIVE DOT ───────────────────────────────────────────────────────────── */
+.live-dot{width:8px;height:8px;background:var(--red);border-radius:4px;animation:pulse 1.5s infinite}
+
+/* ── OTP INPUTS ─────────────────────────────────────────────────────────── */
+.otp-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.otp-box{
+  width:46px;height:54px;border-radius:12px;
+  border:2px solid var(--border);
+  font-family:var(--font-display);font-size:22px;font-weight:700;
+  text-align:center;color:var(--tx);background:var(--surface);
+  transition:border-color .15s;
+}
+.otp-box:focus{border-color:var(--accent)}
+.otp-box.filled{border-color:var(--accent)}
+
+/* ── TRACKING PROGRESS ──────────────────────────────────────────────────── */
+.track-step{display:flex;align-items:flex-start;gap:14px;margin-bottom:0}
+
+/* ── REVIEW STARS ───────────────────────────────────────────────────────── */
+.review-star svg{transition:all .15s}
+
+/* ── SCROLL CHIPS ───────────────────────────────────────────────────────── */
+.chips-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.chips-scroll::-webkit-scrollbar{display:none}
+
+/* ── SCREEN SPECIFIC TWEAKS ─────────────────────────────────────────────── */
+.p20{padding:0 20px}
+.mt8{margin-top:8px}
+.mb16{margin-bottom:16px}
+.mb20{margin-bottom:20px}
+.mb8{margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="phone-wrap">
+<div class="phone" id="app">
+  <div class="notch"></div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: HOME (No login)
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen active" id="s-home">
+    <div style="background:var(--surface)">
+      <div class="status-bar" id="home-status">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg>
+        </div>
+      </div>
+      <!-- Home Header -->
+      <div style="padding:6px 20px 16px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="var(--accent)"/></svg>
+            <button onclick="showModal('location-modal')" style="display:flex;align-items:center;gap:5px;background:none;padding:0">
+              <span id="home-location-text" style="font-size:14px;font-weight:600;color:var(--tx)">Set your location</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+          <h1 style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--tx);letter-spacing:-.5px">Find care for your pet</h1>
+        </div>
+        <button onclick="goTo('s-login-screen')" style="width:40px;height:40px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </button>
+      </div>
+      <!-- Search Bar -->
+      <div style="padding:0 20px 16px;position:relative">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2" style="position:absolute;left:34px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input placeholder="Search sitters, services..." class="input-field" style="padding-left:44px;background:var(--surface-2);border-color:transparent" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='transparent'"/>
+      </div>
+    </div>
+
+    <div class="screen-body" style="padding-bottom:80px">
+      <!-- Hero -->
+      <div class="hero-banner">
+        <div class="hero-accent-circle"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-inner">
+          <p style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:6px;font-weight:500;letter-spacing:.3px">TRUSTED BY 12,000+ PET PARENTS</p>
+          <h2 style="font-family:var(--font-display);font-size:22px;font-weight:800;color:#fff;letter-spacing:-.4px;line-height:1.25;margin-bottom:14px">Your pet deserves<br/>the best care</h2>
+          <button class="btn btn-primary btn-sm" onclick="goTo('s-service-select')" style="width:auto;font-size:13px">Book a sitter</button>
+        </div>
+      </div>
+
+      <!-- Quick Services -->
+      <div style="padding:20px 20px 0">
+        <div class="section-header">
+          <span class="section-title">Services</span>
+          <button class="view-all" onclick="switchTab('search')">Browse all</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <button onclick="setService('sitter');goTo('s-service-select')" style="background:var(--surface);border-radius:var(--r-lg);padding:16px 14px;border:1.5px solid var(--border);text-align:left;transition:all .15s" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+            <div style="width:40px;height:40px;background:var(--accent-l);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px">
+              <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><ellipse cx="8" cy="7" rx="3.5" ry="4.8" fill="var(--accent)" transform="rotate(-30 8 7)"/><ellipse cx="24" cy="7" rx="3.5" ry="4.8" fill="var(--accent)" transform="rotate(30 24 7)"/><ellipse cx="4" cy="18" rx="3.2" ry="4.4" fill="var(--accent)" transform="rotate(-10 4 18)"/><ellipse cx="28" cy="18" rx="3.2" ry="4.4" fill="var(--accent)" transform="rotate(10 28 18)"/><ellipse cx="16" cy="22" rx="9" ry="6.5" fill="var(--accent)"/></svg>
+            </div>
+            <p style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:3px">Find a Sitter</p>
+            <p style="font-size:11px;color:var(--tx2)">Home visits & boarding</p>
+          </button>
+          <button onclick="setService('boarding');goTo('s-service-select')" style="background:var(--surface);border-radius:var(--r-lg);padding:16px 14px;border:1.5px solid var(--border);text-align:left;transition:all .15s" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+            <div style="width:40px;height:40px;background:var(--accent-l);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <p style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:3px">Find Boarding</p>
+            <p style="font-size:11px;color:var(--tx2)">Kennels & pet hotels</p>
+          </button>
+          <button onclick="setService('sitter');setServiceOption('walking');goTo('s-discover')" style="background:var(--surface);border-radius:var(--r-lg);padding:16px 14px;border:1.5px solid var(--border);text-align:left;transition:all .15s" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+            <div style="width:40px;height:40px;background:#EBF7F1;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M13 4.06 L5.5 12 L9 12 L9 20 L11 20 L11 14 L13 14 L13 20 L15 20 L15 12 L18.5 12 Z"/><circle cx="13" cy="2" r="1.5" fill="var(--green)" stroke="none"/></svg>
+            </div>
+            <p style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:3px">Dog Walking</p>
+            <p style="font-size:11px;color:var(--tx2)">Daily scheduled walks</p>
+          </button>
+          <button onclick="setService('sitter');setServiceOption('dropin');goTo('s-discover')" style="background:var(--surface);border-radius:var(--r-lg);padding:16px 14px;border:1.5px solid var(--border);text-align:left;transition:all .15s" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+            <div style="width:40px;height:40px;background:#FEF8EC;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <p style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:3px">Drop-in Visits</p>
+            <p style="font-size:11px;color:var(--tx2)">Quick 30-min check-ins</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Top Sitters -->
+      <div style="padding:24px 20px 0">
+        <div class="section-header">
+          <span class="section-title">Top Sitters Nearby</span>
+          <button class="view-all" onclick="goTo('s-discover')">See all</button>
+        </div>
+        <div id="home-sitters-list"></div>
+      </div>
+
+      <!-- Trust Strip -->
+      <div style="padding:24px 20px 8px">
+        <div style="background:var(--surface);border-radius:var(--r-lg);padding:18px;display:flex;gap:0">
+          <div style="flex:1;text-align:center;border-right:1px solid var(--border)">
+            <p style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--accent)">12K+</p>
+            <p style="font-size:11px;color:var(--tx2);margin-top:2px">Pet parents</p>
+          </div>
+          <div style="flex:1;text-align:center;border-right:1px solid var(--border)">
+            <p style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--accent)">500+</p>
+            <p style="font-size:11px;color:var(--tx2);margin-top:2px">Verified sitters</p>
+          </div>
+          <div style="flex:1;text-align:center">
+            <p style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--accent)">4.9</p>
+            <p style="font-size:11px;color:var(--tx2);margin-top:2px">Avg. rating</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav" id="home-nav">
+      <button class="nav-tab active" onclick="switchTab('home')">
+        <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+        <span class="nav-label" style="color:var(--accent)">Home</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('search')">
+        <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+        <span class="nav-label">Search</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('orders')">
+        <div class="nav-icon" id="nav-orders-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+        <span class="nav-label">Orders</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('chat')">
+        <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <span class="nav-label">Chat</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('profile')">
+        <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <span class="nav-label">Profile</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: SERVICE SELECT
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-service-select">
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div class="top-bar">
+        <button class="back-btn" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tx)" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+        <span class="top-title">What do you need?</span>
+        <div style="width:38px"></div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:20px 20px 100px">
+      <!-- Step 1 -->
+      <p class="section-label">Service type</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px">
+        <button id="btn-sitter" onclick="setService('sitter');updateServiceUI()" style="padding:18px 14px;border-radius:var(--r-lg);border:2px solid var(--border);background:var(--surface);text-align:left;transition:all .2s;cursor:pointer">
+          <div style="width:44px;height:44px;background:var(--accent-l);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+            <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><ellipse cx="8" cy="7" rx="3.5" ry="4.8" fill="var(--accent)" transform="rotate(-30 8 7)"/><ellipse cx="24" cy="7" rx="3.5" ry="4.8" fill="var(--accent)" transform="rotate(30 24 7)"/><ellipse cx="4" cy="18" rx="3.2" ry="4.4" fill="var(--accent)" transform="rotate(-10 4 18)"/><ellipse cx="28" cy="18" rx="3.2" ry="4.4" fill="var(--accent)" transform="rotate(10 28 18)"/><ellipse cx="16" cy="22" rx="9" ry="6.5" fill="var(--accent)"/></svg>
+          </div>
+          <p style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--tx);margin-bottom:4px">Find a Sitter</p>
+          <p style="font-size:12px;color:var(--tx2)">Home visits & boarding</p>
+        </button>
+        <button id="btn-boarding" onclick="setService('boarding');updateServiceUI()" style="padding:18px 14px;border-radius:var(--r-lg);border:2px solid var(--border);background:var(--surface);text-align:left;transition:all .2s;cursor:pointer">
+          <div style="width:44px;height:44px;background:var(--accent-l);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <p style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--tx);margin-bottom:4px">Find Boarding</p>
+          <p style="font-size:12px;color:var(--tx2)">Kennels & pet hotels</p>
+        </button>
+      </div>
+
+      <!-- Step 2 Pet (sitter only) -->
+      <div id="pet-type-section" style="display:none;margin-bottom:28px">
+        <p class="section-label">Your pet</p>
+        <div style="display:flex;gap:10px">
+          <button id="btn-dog" onclick="setPet('dog');updatePetUI()" style="flex:1;padding:14px;border-radius:var(--r-lg);border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;cursor:pointer">
+            <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><path d="M8 36C8 26 14 18 24 18C34 18 40 26 40 36" fill="var(--surface-2)"/><ellipse cx="24" cy="18" rx="8" ry="6" fill="var(--surface-2)"/><circle cx="19" cy="16" r="2" fill="var(--tx)"/><circle cx="29" cy="16" r="2" fill="var(--tx)"/><ellipse cx="6" cy="22" rx="4" ry="6" fill="var(--surface-2)" transform="rotate(-20 6 22)"/><ellipse cx="42" cy="22" rx="4" ry="6" fill="var(--surface-2)" transform="rotate(20 42 22)"/><ellipse cx="24" cy="20" rx="3" ry="2" fill="#FFB3BA"/></svg>
+            <span style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--tx)">Dog</span>
+          </button>
+          <button id="btn-cat" onclick="setPet('cat');updatePetUI()" style="flex:1;padding:14px;border-radius:var(--r-lg);border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;cursor:pointer">
+            <svg width="28" height="28" viewBox="0 0 48 48" fill="none"><path d="M10 36C10 26 16 20 24 20C32 20 38 26 38 36" fill="var(--surface-2)"/><path d="M16 20 L12 8 L20 16 Z" fill="var(--surface-2)"/><path d="M32 20 L36 8 L28 16 Z" fill="var(--surface-2)"/><circle cx="19" cy="22" r="2" fill="var(--tx)"/><circle cx="29" cy="22" r="2" fill="var(--tx)"/><ellipse cx="24" cy="26" rx="3" ry="2" fill="#FFB3BA"/></svg>
+            <span style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--tx)">Cat</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3 Service Options -->
+      <div id="service-options-section" style="display:none;margin-bottom:28px">
+        <p class="section-label">Select service</p>
+        <div id="service-options-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+      <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:393px;padding:16px 20px 28px;background:var(--surface);border-top:1px solid var(--border);z-index:10">
+        <button id="service-cta" class="btn btn-primary" onclick="goTo('s-discover')" disabled>Find Available Sitters</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: DISCOVER (Location + Date + Filters + Sitters)
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-discover">
+    <div class="discover-header">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div class="top-bar">
+        <button class="back-btn" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tx)" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+        <span class="top-title" id="discover-title">Sitters for your Dog</span>
+        <div style="width:38px"></div>
+      </div>
+      <!-- Location bar -->
+      <button class="location-bar" onclick="showModal('location-modal')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="var(--accent)"/></svg>
+        <span id="discover-location" style="font-size:14px;font-weight:600;color:var(--tx);flex:1;text-align:left">Koramangala, Bengaluru</span>
+        <span style="font-size:12px;font-weight:600;color:var(--accent)">Change</span>
+      </button>
+      <!-- Date Row -->
+      <div class="date-row">
+        <button class="date-btn" id="start-date-btn" onclick="document.getElementById('start-date-input').showPicker?document.getElementById('start-date-input').showPicker():document.getElementById('start-date-input').focus()">
+          <span class="date-label">From</span>
+          <span class="date-value" id="start-date-display">Select date</span>
+          <input type="date" id="start-date-input" style="position:absolute;opacity:0;width:1px;height:1px" onchange="setStartDate(this.value)"/>
+        </button>
+        <button class="date-btn" id="end-date-btn" onclick="document.getElementById('end-date-input').showPicker?document.getElementById('end-date-input').showPicker():document.getElementById('end-date-input').focus()">
+          <span class="date-label">To</span>
+          <span class="date-value" id="end-date-display">Select date</span>
+          <input type="date" id="end-date-input" style="position:absolute;opacity:0;width:1px;height:1px" onchange="setEndDate(this.value)"/>
+        </button>
+      </div>
+      <!-- Filter Chips -->
+      <div class="chips-scroll" style="margin-bottom:14px">
+        <button class="chip" id="chip-price" onclick="toggleChip('chip-price')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="10" y1="18" x2="20" y2="18"/></svg>
+          Max ₹1,500
+        </button>
+        <button class="chip" id="chip-distance" onclick="toggleChip('chip-distance')">Within 5 km</button>
+        <button class="chip" id="chip-outdoor" onclick="toggleChip('chip-outdoor')">Has outdoor</button>
+        <button class="chip" id="chip-verified" onclick="toggleChip('chip-verified')">Verified only</button>
+        <button class="chip" id="chip-specialist" onclick="toggleChip('chip-specialist')">Specialist</button>
+      </div>
+    </div>
+
+    <div class="screen-body" style="padding:14px 20px 20px">
+      <p style="font-size:13px;color:var(--tx2);margin-bottom:14px"><strong id="sitter-count" style="color:var(--tx)">4 sitters</strong> available near you</p>
+      <div id="discover-sitters-list"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: SITTER PROFILE
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-sitter-profile">
+    <div style="overflow-y:auto;height:100%" id="sitter-profile-scroll">
+      <!-- Hero -->
+      <div style="position:relative;height:200px" id="sitter-hero">
+        <div id="sitter-hero-bg" style="position:absolute;inset:0"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,.1) 0%, rgba(0,0,0,.5) 100%)"></div>
+        <div style="position:absolute;top:14px;left:20px;right:20px;display:flex;justify-content:space-between">
+          <div class="status-bar" style="padding:0;height:auto;flex:0"></div>
+        </div>
+        <div style="position:absolute;top:52px;left:20px;right:20px;display:flex;justify-content:space-between">
+          <button class="back-btn" style="background:rgba(255,255,255,.2)" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+          <button style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+        </div>
+      </div>
+
+      <!-- Profile body -->
+      <div style="padding-bottom:100px">
+        <div style="background:var(--surface);padding:0 20px 20px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:-32px;margin-bottom:14px">
+            <div style="position:relative">
+              <div id="sitter-avatar-lg" class="avatar" style="width:68px;height:68px;font-size:26px;border:3px solid var(--surface);box-shadow:var(--shadow-md)"></div>
+              <div class="verify-dot" style="position:absolute;bottom:2px;right:2px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div style="text-align:right">
+              <div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span id="sitter-rating-lg" style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--tx)"></span>
+                <span id="sitter-reviews-lg" style="font-size:13px;color:var(--tx2)"></span>
+              </div>
+            </div>
+          </div>
+          <h2 id="sitter-name-lg" style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--tx);letter-spacing:-.4px;margin-bottom:4px"></h2>
+          <p id="sitter-distance-lg" style="font-size:13px;color:var(--tx2);margin-bottom:10px"></p>
+          <p id="sitter-bio-lg" style="font-size:14px;color:var(--tx2);line-height:1.65;margin-bottom:14px"></p>
+          <div style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--green-l);border-radius:10px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+            <span id="sitter-rebook-lg" style="font-size:13px;color:var(--green);font-weight:600"></span>
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div style="background:var(--surface);margin-top:8px;padding:20px">
+          <h3 style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--tx);margin-bottom:14px">Services & Pricing</h3>
+          <div id="sitter-services-list"></div>
+        </div>
+
+        <!-- Includes -->
+        <div style="background:var(--surface);margin-top:8px;padding:20px">
+          <h3 style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--tx);margin-bottom:14px">What's Included</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:20px;height:20px;border-radius:10px;background:var(--green-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx)">Pet first aid kit</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:20px;height:20px;border-radius:10px;background:var(--green-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx)">Bowls provided</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:20px;height:20px;border-radius:10px;background:var(--green-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx)">Cozy sleeping area</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start"><div style="width:20px;height:20px;border-radius:10px;background:var(--green-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx)">Daily photo updates</span></div>
+          </div>
+        </div>
+
+        <!-- Add-ons -->
+        <div style="background:var(--surface);margin-top:8px;padding:20px">
+          <h3 style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--tx);margin-bottom:4px">Optional Add-ons</h3>
+          <p style="font-size:13px;color:var(--tx2);margin-bottom:14px">Select to add — total updates instantly</p>
+          <div id="addon-list"></div>
+        </div>
+
+        <!-- Trust + Home -->
+        <div style="background:var(--surface);margin-top:8px;padding:20px">
+          <h3 style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--tx);margin-bottom:14px">Home Details</h3>
+          <div id="sitter-home-details" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"></div>
+          <div style="display:flex;gap:8px">
+            <div class="tag tag-green" style="flex:1;text-align:center;padding:9px 0">ID Verified</div>
+            <div class="tag tag-green" style="flex:1;text-align:center;padding:9px 0">Address Verified</div>
+            <div class="tag tag-green" style="flex:1;text-align:center;padding:9px 0">Pet First-Aid</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky CTA -->
+    <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px 28px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div>
+          <p style="font-size:12px;color:var(--tx2)">Estimated total</p>
+          <p id="profile-total" style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--tx);letter-spacing:-.5px">₹899</p>
+        </div>
+        <div style="text-align:right">
+          <p style="font-size:11px;color:var(--tx3)" id="nights-label">1 night</p>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="proceedFromProfile()">Proceed to Book</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: LOGIN (standalone, also used as entry for profile/orders)
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-login-screen">
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div class="top-bar">
+        <button class="back-btn" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tx)" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+        <span class="top-title"></span><div style="width:38px"></div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:32px 24px 40px">
+      <div style="width:48px;height:48px;background:var(--accent-l);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+        <svg width="26" height="26" viewBox="0 0 32 32" fill="none"><ellipse cx="8" cy="7" rx="3.5" ry="4.8" fill="var(--accent)" transform="rotate(-30 8 7)"/><ellipse cx="24" cy="7" rx="3.5" ry="4.8" fill="var(--accent)" transform="rotate(30 24 7)"/><ellipse cx="4" cy="18" rx="3.2" ry="4.4" fill="var(--accent)" transform="rotate(-10 4 18)"/><ellipse cx="28" cy="18" rx="3.2" ry="4.4" fill="var(--accent)" transform="rotate(10 28 18)"/><ellipse cx="16" cy="22" rx="9" ry="6.5" fill="var(--accent)"/></svg>
+      </div>
+      <h2 style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--tx);letter-spacing:-.5px;margin-bottom:8px">Welcome to<br/>PetVesta</h2>
+      <p style="font-size:15px;color:var(--tx2);margin-bottom:32px">Sign in to complete your booking</p>
+
+      <!-- Phone login -->
+      <div id="login-phone-section">
+        <p class="input-label">Mobile Number</p>
+        <div style="display:flex;gap:10px;margin-bottom:20px">
+          <div style="padding:13px 14px;background:var(--surface-2);border-radius:12px;border:1.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <span style="font-size:18px">🇮🇳</span>
+            <span style="font-size:15px;font-weight:600;color:var(--tx)">+91</span>
+          </div>
+          <input type="tel" id="login-phone" maxlength="10" placeholder="Enter mobile number" class="input-field" style="flex:1" oninput="checkPhoneReady()"/>
+        </div>
+        <button id="send-otp-btn" class="btn btn-primary" onclick="sendOTP()" disabled>Send OTP</button>
+      </div>
+
+      <!-- OTP section -->
+      <div id="login-otp-section" style="display:none">
+        <div style="background:var(--green-l);border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+          <p style="font-size:13px;color:var(--green);margin:0">OTP sent to +91 <span id="display-phone"></span></p>
+          <button onclick="document.getElementById('login-otp-section').style.display='none';document.getElementById('login-phone-section').style.display='block'" style="font-size:13px;color:var(--accent);font-weight:600;background:none">Edit</button>
+        </div>
+        <p class="input-label" style="margin-bottom:12px">Enter 6-digit OTP</p>
+        <div class="otp-inputs" id="otp-inputs">
+          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,0)"/>
+          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,1)"/>
+          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,2)"/>
+          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,3)"/>
+          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,4)"/>
+          <input type="tel" maxlength="1" class="otp-box" oninput="otpInput(this,5)"/>
+        </div>
+        <button id="verify-btn" class="btn btn-primary" onclick="verifyOTP()" disabled style="margin-bottom:14px">Verify & Continue</button>
+        <p style="text-align:center;font-size:13px;color:var(--tx3)">Didn't receive? <button style="color:var(--accent);font-weight:600;background:none;font-size:13px">Resend OTP</button></p>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;margin:24px 0">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:12px;color:var(--tx3);font-weight:500">or continue with</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <button onclick="loginWithGoogle()" style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--tx);cursor:pointer;transition:all .15s" onmousedown="this.style.background='var(--surface-2)'" onmouseup="this.style.background='var(--surface)'">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
+
+      <p style="font-size:12px;color:var(--tx3);text-align:center;margin-top:28px;line-height:1.7">By continuing, you agree to PetVesta's<br/><span style="color:var(--accent)">Terms of Service</span> and <span style="color:var(--accent)">Privacy Policy</span></p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: BILLING RECEIPT
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-billing">
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div class="top-bar">
+        <button class="back-btn" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tx)" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+        <span class="top-title">Booking Summary</span><div style="width:38px"></div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:16px 20px 100px">
+      <!-- Sitter mini card -->
+      <div class="card" style="display:flex;gap:14px;margin-bottom:14px">
+        <div id="billing-avatar" class="avatar" style="width:52px;height:52px;font-size:20px"></div>
+        <div>
+          <p id="billing-name" style="font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--tx);margin-bottom:3px"></p>
+          <p id="billing-service-desc" style="font-size:13px;color:var(--tx2);margin-bottom:3px"></p>
+          <p id="billing-dates" style="font-size:13px;color:var(--tx2)"></p>
+        </div>
+      </div>
+
+      <!-- Info note -->
+      <div style="background:#EFF6FF;border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;gap:10px">
+        <div style="width:18px;height:18px;border-radius:9px;background:#3B82F6;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><span style="font-size:11px;color:#fff;font-weight:800">i</span></div>
+        <p style="font-size:13px;color:#1D4ED8;line-height:1.65;margin:0">Care instructions will be captured after payment. No extra steps now.</p>
+      </div>
+
+      <!-- Price breakdown -->
+      <div class="card" style="margin-bottom:16px">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:14px">Price Breakdown</h3>
+        <div id="billing-breakdown"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:2px solid var(--border)">
+          <span style="font-family:var(--font-display);font-size:17px;font-weight:800;color:var(--tx)">Total</span>
+          <span id="billing-total" style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--tx);letter-spacing:-.5px"></span>
+        </div>
+        <p style="font-size:12px;color:var(--tx3);text-align:center;margin-top:10px">You won't be charged until the sitter confirms</p>
+      </div>
+
+      <!-- Trust items -->
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;gap:10px;align-items:center"><div style="width:20px;height:20px;background:var(--green-l);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx2)">100% refundable if cancelled 24h before</span></div>
+        <div style="display:flex;gap:10px;align-items:center"><div style="width:20px;height:20px;background:var(--green-l);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx2)">Payment held securely in escrow</span></div>
+        <div style="display:flex;gap:10px;align-items:center"><div style="width:20px;height:20px;background:var(--green-l);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx2)">Covered by PetGuard insurance</span></div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px 28px;background:var(--surface);border-top:1px solid var(--border)">
+      <button class="btn btn-primary" onclick="goTo('s-payment')">Proceed to Pay</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: PAYMENT
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-payment">
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div class="top-bar">
+        <button class="back-btn" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tx)" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+        <span class="top-title">Payment</span><div style="width:38px"></div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:16px 20px 100px">
+      <!-- Amount box -->
+      <div style="background:var(--tx);border-radius:var(--r-xl);padding:24px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 80% 50%, rgba(232,84,25,.25) 0%, transparent 60%)"></div>
+        <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:6px;font-weight:500">Total Amount</p>
+        <p id="payment-total-display" style="font-family:var(--font-display);font-size:38px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:8px"></p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <span style="font-size:11px;color:rgba(255,255,255,.4)">Held securely in escrow until service is complete</span>
+        </div>
+      </div>
+
+      <!-- Vouchers -->
+      <div class="card" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer">
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="width:36px;height:36px;background:var(--accent-l);border-radius:10px;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
+          <div><p style="font-size:14px;font-weight:600;color:var(--tx)">Vouchers & Offers</p><p style="font-size:12px;color:var(--tx2)">Auto-applying best discount</p></div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <!-- Payment methods -->
+      <div class="card" style="margin-bottom:14px;padding:0;overflow:hidden">
+        <p style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;padding:14px 16px 10px">Payment Method</p>
+        <div id="payment-methods">
+          <div class="payment-method-row active-method" onclick="selectPayment(this)" data-method="upi" style="padding:14px 16px;display:flex;gap:14px;align-items:center;cursor:pointer;border-top:1px solid var(--border);background:var(--accent-l);transition:background .15s">
+            <div style="width:38px;height:38px;background:var(--accent-l);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            </div>
+            <div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:2px"><span style="font-size:14px;font-weight:600;color:var(--tx)">UPI</span><span class="tag tag-orange" style="font-size:10px">#1 in India</span></div><p style="font-size:12px;color:var(--tx2)">GPay, PhonePe, Paytm</p></div>
+            <div style="width:20px;height:20px;border-radius:10px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center"><div style="width:10px;height:10px;border-radius:5px;background:var(--accent)"></div></div>
+          </div>
+          <div class="payment-method-row" onclick="selectPayment(this)" data-method="card" style="padding:14px 16px;display:flex;gap:14px;align-items:center;cursor:pointer;border-top:1px solid var(--border);transition:background .15s">
+            <div style="width:38px;height:38px;background:var(--surface-2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+            <div style="flex:1"><p style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:2px">Credit / Debit Card</p><p style="font-size:12px;color:var(--tx2)">Visa, Mastercard, RuPay</p></div>
+            <div style="width:20px;height:20px;border-radius:10px;border:2px solid var(--border)"></div>
+          </div>
+          <div class="payment-method-row" onclick="selectPayment(this)" data-method="netbanking" style="padding:14px 16px;display:flex;gap:14px;align-items:center;cursor:pointer;border-top:1px solid var(--border);transition:background .15s">
+            <div style="width:38px;height:38px;background:var(--surface-2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="3"/><path d="M5 7h14l-1 9H6L5 7z"/><path d="M3 7L12 2l9 5"/></svg></div>
+            <div style="flex:1"><p style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:2px">Net Banking</p><p style="font-size:12px;color:var(--tx2)">All major banks</p></div>
+            <div style="width:20px;height:20px;border-radius:10px;border:2px solid var(--border)"></div>
+          </div>
+          <div class="payment-method-row" onclick="selectPayment(this)" data-method="wallet" style="padding:14px 16px;display:flex;gap:14px;align-items:center;cursor:pointer;border-top:1px solid var(--border);transition:background .15s">
+            <div style="width:38px;height:38px;background:var(--surface-2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg></div>
+            <div style="flex:1"><p style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:2px">Wallet Balance</p><p style="font-size:12px;color:var(--tx2)">PetVesta Wallet · ₹0</p></div>
+            <div style="width:20px;height:20px;border-radius:10px;border:2px solid var(--border)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span style="font-size:11px;color:var(--tx3)">SSL encrypted · PCI-DSS compliant</span>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px 28px;background:var(--surface);border-top:1px solid var(--border)">
+      <button id="pay-btn" class="btn btn-dark" onclick="makePayment()">Pay <span id="pay-amount"></span></button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: CARE DETAILS
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-care-details">
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div style="padding:12px 20px 16px">
+        <div style="width:44px;height:44px;background:var(--green-l);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <p style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">Payment Successful</p>
+        <h2 style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--tx);letter-spacing:-.3px">Share care details with <span id="care-sitter-name"></span></h2>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:8px 20px 100px">
+      <!-- Key handover -->
+      <div style="margin-bottom:20px">
+        <p class="section-label">Key Handover Method</p>
+        <div class="pill-group">
+          <button class="pill" onclick="togglePill(this,'keyMethod','inperson')">In-person</button>
+          <button class="pill" onclick="togglePill(this,'keyMethod','lockbox')">Lockbox</button>
+          <button class="pill" onclick="togglePill(this,'keyMethod','neighbour')">Key with neighbour</button>
+        </div>
+      </div>
+      <!-- Feeding -->
+      <div style="margin-bottom:20px">
+        <p class="section-label">Feeding Schedule</p>
+        <div class="pill-group">
+          <button class="pill active" onclick="togglePill(this,'feeding','1x')">1x daily</button>
+          <button class="pill" onclick="togglePill(this,'feeding','2x')">2x daily</button>
+          <button class="pill" onclick="togglePill(this,'feeding','3x')">3x daily</button>
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">Feeding Instructions</label>
+        <textarea class="input-field" rows="2" placeholder="e.g. Half cup kibble at 8am and 6pm..." style="resize:none"></textarea>
+      </div>
+      <!-- Walk -->
+      <div style="margin-bottom:20px">
+        <p class="section-label">Walk Schedule</p>
+        <div class="pill-group">
+          <button class="pill" onclick="this.classList.toggle('active')">Morning</button>
+          <button class="pill active" onclick="this.classList.toggle('active')">Afternoon</button>
+          <button class="pill" onclick="this.classList.toggle('active')">Evening</button>
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">Emergency Vet</label>
+        <input class="input-field" placeholder="Clinic name · Phone number"/>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">Your Emergency Contact</label>
+        <input class="input-field" placeholder="+91 98765 43210"/>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">Anything else to note?</label>
+        <textarea class="input-field" rows="3" placeholder="Special routines, favourite spots, things to avoid..." style="resize:none"></textarea>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px 28px;background:var(--surface);border-top:1px solid var(--border)">
+      <button class="btn btn-primary" onclick="goTo('s-all-set')">Save & Continue</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: ALL SET
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-all-set">
+    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+    <div class="screen-body" style="padding:16px 20px 100px">
+      <div style="text-align:center;padding:20px 0 28px">
+        <div style="width:80px;height:80px;background:var(--green-l);border-radius:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h1 style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--tx);letter-spacing:-.5px;margin-bottom:8px">You're all set!</h1>
+        <p id="allset-sub" style="font-size:15px;color:var(--tx2);line-height:1.6"></p>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:14px">Already handled for you</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:10px;align-items:center"><div style="width:22px;height:22px;background:var(--green-l);border-radius:11px;display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx)">Booking confirmation via SMS & Email</span></div><span style="font-size:12px;font-weight:700;color:var(--green)">Done</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:10px;align-items:center"><div style="width:22px;height:22px;background:var(--green-l);border-radius:11px;display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx)">Care instructions shared with sitter</span></div><span style="font-size:12px;font-weight:700;color:var(--green)">Done</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:10px;align-items:center"><div style="width:22px;height:22px;background:var(--green-l);border-radius:11px;display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div><span style="font-size:13px;color:var(--tx)">Emergency contacts noted</span></div><span style="font-size:12px;font-weight:700;color:var(--green)">Done</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px" id="allset-checklist">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:14px">Your pre-service checklist</h3>
+        <div style="display:flex;flex-direction:column;gap:12px" id="checklist-items"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:12px">You'll be notified</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:10px;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span style="font-size:13px;color:var(--tx2)">48h before: Reminder to prepare</span></div>
+          <div style="display:flex;gap:10px;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span style="font-size:13px;color:var(--tx2)">24h before: Sitter will confirm</span></div>
+          <div style="display:flex;gap:10px;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span style="font-size:13px;color:var(--tx2)">2h before: Sitter is on the way</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px 28px;background:var(--surface);border-top:1px solid var(--border)">
+      <button class="btn btn-primary" onclick="completeBooking()">Go to Home</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: PET DETAILS FORM
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-pet-details">
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div class="top-bar">
+        <button class="back-btn" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tx)" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+        <span class="top-title">Pet Details</span><div style="width:38px"></div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:16px 20px 100px">
+      <div style="background:var(--red-l);border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-start">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p style="font-size:13px;color:var(--red);line-height:1.6;margin:0">Pet details are required to complete your booking. This is a one-time step and saved for all future bookings.</p>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">Pet Name</label>
+        <input class="input-field" placeholder="e.g. Bruno" id="pet-name-input"/>
+      </div>
+      <div style="margin-bottom:16px">
+        <p class="input-label" style="margin-bottom:8px">Species</p>
+        <div class="pill-group">
+          <button class="pill active" onclick="togglePill(this,'petSpecies','dog')">Dog</button>
+          <button class="pill" onclick="togglePill(this,'petSpecies','cat')">Cat</button>
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">Breed</label>
+        <select class="input-field"><option value="">Select breed</option><option>Labrador</option><option>Golden Retriever</option><option>German Shepherd</option><option>Beagle</option><option>Pug</option><option>Indie</option><option>Shih Tzu</option><option>Husky</option></select>
+      </div>
+      <div style="margin-bottom:16px">
+        <p class="input-label" style="margin-bottom:8px">Size</p>
+        <div class="pill-group">
+          <button class="pill" onclick="togglePill(this,'petSize','small')">Small (&lt;10kg)</button>
+          <button class="pill active" onclick="togglePill(this,'petSize','medium')">Medium</button>
+          <button class="pill" onclick="togglePill(this,'petSize','large')">Large</button>
+          <button class="pill" onclick="togglePill(this,'petSize','giant')">Giant</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <p class="input-label" style="margin-bottom:8px">Age</p>
+        <div class="pill-group">
+          <button class="pill" onclick="togglePill(this,'petAge','puppy')">Puppy</button>
+          <button class="pill active" onclick="togglePill(this,'petAge','adult')">Adult</button>
+          <button class="pill" onclick="togglePill(this,'petAge','senior')">Senior</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div>
+          <p class="input-label" style="margin-bottom:8px">Gender</p>
+          <div class="pill-group">
+            <button class="pill active" onclick="togglePill(this,'petGender','male')">Male</button>
+            <button class="pill" onclick="togglePill(this,'petGender','female')">Female</button>
+          </div>
+        </div>
+        <div>
+          <p class="input-label" style="margin-bottom:8px">Neutered</p>
+          <div class="pill-group">
+            <button class="pill active" onclick="togglePill(this,'petNeutered','yes')">Yes</button>
+            <button class="pill" onclick="togglePill(this,'petNeutered','no')">No</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <p class="input-label" style="margin-bottom:8px">Temperament with Strangers</p>
+        <div class="pill-group">
+          <button class="pill active" onclick="togglePill(this,'petTemp','friendly')">Friendly</button>
+          <button class="pill" onclick="togglePill(this,'petTemp','shy')">Shy</button>
+          <button class="pill" onclick="togglePill(this,'petTemp','warming')">Needs warming up</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <p class="input-label" style="margin-bottom:8px">Special Needs (select all that apply)</p>
+        <div class="pill-group">
+          <button class="pill" onclick="this.classList.toggle('active')">Medication</button>
+          <button class="pill" onclick="this.classList.toggle('active')">Anxiety</button>
+          <button class="pill" onclick="this.classList.toggle('active')">Dietary restrictions</button>
+          <button class="pill" onclick="this.classList.toggle('active')">Mobility issues</button>
+          <button class="pill active" onclick="this.classList.toggle('active')">None</button>
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">Vaccination Status</label>
+        <button style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px dashed var(--border);background:var(--surface-2);display:flex;align-items:center;gap:10px;font-family:var(--font-body);cursor:pointer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span style="font-size:14px;color:var(--accent);font-weight:500">Upload Certificate</span>
+        </button>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px 28px;background:var(--surface);border-top:1px solid var(--border)">
+      <button class="btn btn-primary" onclick="savePetDetails()">Save Pet Details</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: TRACKING
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-tracking">
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div style="padding:8px 20px 14px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <p style="font-size:12px;color:var(--tx2);margin-bottom:2px">Your pet's status</p>
+          <h2 style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--tx);letter-spacing:-.4px">Bruno's Updates</h2>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--red-l);border-radius:100px;padding:7px 14px">
+          <div class="live-dot"></div>
+          <span style="font-size:12px;font-weight:800;color:var(--red)">LIVE</span>
+        </div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:0 20px 100px">
+      <!-- Sitter bar -->
+      <div style="background:var(--surface);border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow-sm)">
+        <div class="avatar" style="width:42px;height:42px;background:#C8D8E8;font-size:16px;font-weight:700;color:var(--tx)">AR</div>
+        <div style="flex:1"><p style="font-weight:700;font-size:14px;color:var(--tx);margin-bottom:2px">Arjun Reddy</p><p style="font-size:12px;color:var(--green);font-weight:600">Service in progress</p></div>
+        <button style="width:36px;height:36px;background:var(--accent-l);border-radius:12px;display:flex;align-items:center;justify-content:center" onclick="goTo('s-chat-detail')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+      </div>
+      <!-- Map placeholder -->
+      <div style="background:linear-gradient(135deg,#E8F4F0 0%,#D4EDE6 100%);border-radius:var(--r-lg);height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;margin-bottom:14px;position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.15) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.15) 1px,transparent 1px);background-size:22px 22px"></div>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        <p style="font-size:13px;font-weight:700;color:var(--green);position:relative">Live Walk Tracking</p>
+        <p style="font-size:11px;color:var(--tx2);position:relative">GPS route updating in real time</p>
+      </div>
+      <!-- Steps -->
+      <div style="background:var(--surface);border-radius:var(--r-lg);padding:18px;margin-bottom:14px;box-shadow:var(--shadow-sm)">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:16px">Booking Progress</h3>
+        <div id="tracking-steps"></div>
+      </div>
+      <!-- Timeline -->
+      <div style="background:var(--surface);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow-sm)">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:14px">Activity Timeline</h3>
+        <div id="timeline-items"></div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px 28px;background:var(--surface);border-top:1px solid var(--border)">
+      <button class="btn btn-dark" onclick="completeService()">Mark Service Complete</button>
+    </div>
+    <div class="bottom-nav"><button class="nav-tab" onclick="switchTab('home')"><div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div><span class="nav-label">Home</span></button><button class="nav-tab" onclick="switchTab('search')"><div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div><span class="nav-label">Search</span></button><button class="nav-tab active" onclick="switchTab('orders')"><div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><span class="nav-label" style="color:var(--accent)">Orders</span></button><button class="nav-tab" onclick="switchTab('chat')"><div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><span class="nav-label">Chat</span></button><button class="nav-tab" onclick="switchTab('profile')"><div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="nav-label">Profile</span></button></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: REVIEW
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-review">
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div class="top-bar"><div style="width:38px"></div><span class="top-title">Leave a Review</span><div style="width:38px"></div></div>
+    </div>
+    <div class="screen-body" style="padding:0 20px 100px">
+      <div style="text-align:center;padding:24px 0 28px">
+        <div style="width:64px;height:64px;background:var(--surface-2);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <h2 style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--tx);margin-bottom:6px">Bruno is home!</h2>
+        <p style="font-size:14px;color:var(--tx2)">Service completed successfully</p>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <p style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:16px;text-align:center">How was Bruno's stay with Arjun?</p>
+        <div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px" id="review-stars">
+          <button class="review-star" onclick="setRating(1)"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+          <button class="review-star" onclick="setRating(2)"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+          <button class="review-star" onclick="setRating(3)"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+          <button class="review-star" onclick="setRating(4)"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+          <button class="review-star" onclick="setRating(5)"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px">
+          <button class="chip" onclick="this.classList.toggle('active')">Great communicator</button>
+          <button class="chip active" onclick="this.classList.toggle('active')">Pet loved them</button>
+          <button class="chip" onclick="this.classList.toggle('active')">Clean home</button>
+          <button class="chip active" onclick="this.classList.toggle('active')">Punctual</button>
+          <button class="chip" onclick="this.classList.toggle('active')">Would book again</button>
+        </div>
+        <textarea class="input-field" rows="3" placeholder="Tell others about your experience..." style="resize:none;margin-bottom:0"></textarea>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <p style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--tx);margin-bottom:4px">Leave a tip</p>
+        <p style="font-size:13px;color:var(--tx2);margin-bottom:14px">100% goes to Arjun Reddy</p>
+        <div style="display:flex;gap:8px" id="tip-btns">
+          <button class="pill active" onclick="selectTip(this,0)" style="flex:1;text-align:center">None</button>
+          <button class="pill" onclick="selectTip(this,100)" style="flex:1;text-align:center">₹100</button>
+          <button class="pill" onclick="selectTip(this,200)" style="flex:1;text-align:center">₹200</button>
+          <button class="pill" onclick="selectTip(this,500)" style="flex:1;text-align:center">₹500</button>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px 28px;background:var(--surface);border-top:1px solid var(--border)">
+      <button class="btn btn-primary" onclick="submitReview()" id="review-submit-btn" disabled>Submit Review</button>
+      <p style="text-align:center;margin-top:10px"><button style="font-size:13px;color:var(--tx3);background:none;font-family:var(--font-body)" onclick="switchTab('home')">Skip for now</button></p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       SCREEN: CHAT DETAIL
+  ════════════════════════════════════════════════════════ -->
+  <div class="screen" id="s-chat-detail">
+    <div style="background:var(--surface);border-bottom:1px solid var(--border)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div class="top-bar">
+        <button class="back-btn" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tx)" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--tx)">Arjun Reddy</span>
+          <span style="font-size:12px;color:var(--green);font-weight:600">Active service</span>
+        </div>
+        <div class="avatar" style="width:38px;height:38px;background:#C8D8E8;font-size:14px">AR</div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:16px 20px;display:flex;flex-direction:column;gap:0" id="chat-messages">
+      <span class="chat-time" style="text-align:center;margin-bottom:16px">Today, 8:15 AM</span>
+      <div class="chat-bubble in">Hi! I've arrived and Bruno seems really happy. Just gave him his morning walk.</div>
+      <span class="chat-time">8:16 AM</span>
+      <div class="chat-bubble out">That's great! Thank you so much. Did he eat his breakfast?</div>
+      <span class="chat-time out">8:18 AM</span>
+      <div class="chat-bubble in">Yes, ate everything! He's such a good boy. I'll send photos every 2 hours.</div>
+      <span class="chat-time">8:19 AM</span>
+      <div class="chat-bubble out">Perfect, that would be amazing!</div>
+      <span class="chat-time out">8:19 AM</span>
+      <div class="chat-bubble in">Of course! He's napping now after the walk. All good here.</div>
+      <span class="chat-time">10:30 AM</span>
+    </div>
+    <div style="padding:12px 16px 28px;background:var(--surface);border-top:1px solid var(--border);display:flex;gap:10px;align-items:center">
+      <input id="chat-input" class="input-field" placeholder="Message Arjun..." style="flex:1;border-radius:100px;padding:11px 18px;border-color:var(--border-2)"/>
+      <button onclick="sendChatMessage()" style="width:44px;height:44px;background:var(--accent);border-radius:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       MODALS
+  ════════════════════════════════════════════════════════ -->
+
+  <!-- Location Modal -->
+  <div class="modal-overlay" id="location-modal" onclick="hideModalOutside(event,'location-modal')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div style="padding:20px 24px">
+        <h2 style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--tx);margin-bottom:6px">Set your location</h2>
+        <p style="font-size:14px;color:var(--tx2);margin-bottom:20px">So we can find sitters near you</p>
+        <button onclick="setLocation('current')" style="width:100%;padding:14px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--accent-l);display:flex;align-items:center;gap:12px;cursor:pointer;font-family:var(--font-body);margin-bottom:14px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          <span style="font-size:14px;font-weight:600;color:var(--accent)">Use my current location</span>
+        </button>
+        <div style="position:relative;margin-bottom:14px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2" style="position:absolute;left:14px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="location-search" placeholder="Search area, city..." class="input-field" style="padding-left:40px" oninput="filterCities(this.value)"/>
+        </div>
+        <div id="city-list">
+          <button class="location-city-btn" onclick="setLocation('Koramangala, Bengaluru')" style="width:100%;padding:14px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:none;font-family:var(--font-body);cursor:pointer;text-align:left"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="var(--tx3)"/></svg><span style="font-size:14px;color:var(--tx)">Koramangala, Bengaluru</span></button>
+          <button class="location-city-btn" onclick="setLocation('Indiranagar, Bengaluru')" style="width:100%;padding:14px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:none;font-family:var(--font-body);cursor:pointer;text-align:left"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="var(--tx3)"/></svg><span style="font-size:14px;color:var(--tx)">Indiranagar, Bengaluru</span></button>
+          <button class="location-city-btn" onclick="setLocation('Bandra, Mumbai')" style="width:100%;padding:14px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:none;font-family:var(--font-body);cursor:pointer;text-align:left"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="var(--tx3)"/></svg><span style="font-size:14px;color:var(--tx)">Bandra, Mumbai</span></button>
+          <button class="location-city-btn" onclick="setLocation('Hitech City, Hyderabad')" style="width:100%;padding:14px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:none;font-family:var(--font-body);cursor:pointer;text-align:left"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="var(--tx3)"/></svg><span style="font-size:14px;color:var(--tx)">Hitech City, Hyderabad</span></button>
+          <button class="location-city-btn" onclick="setLocation('T Nagar, Chennai')" style="width:100%;padding:14px 0;display:flex;align-items:center;gap:12px;background:none;border:none;font-family:var(--font-body);cursor:pointer;text-align:left"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="var(--tx3)"/></svg><span style="font-size:14px;color:var(--tx)">T Nagar, Chennai</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal (popup from sitter profile) -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="modal-sheet" style="padding-bottom:36px">
+      <div class="modal-handle"></div>
+      <div style="padding:20px 24px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+          <div>
+            <h2 style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--tx);margin-bottom:4px">Sign in to book</h2>
+            <p style="font-size:14px;color:var(--tx2)">Quick and easy — takes under a minute</p>
+          </div>
+          <button onclick="hideModal('login-modal')" style="width:32px;height:32px;border-radius:10px;background:var(--surface-2);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tx)" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <button onclick="loginWithGoogle()" style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--tx);cursor:pointer;margin-bottom:14px;transition:all .15s" onmousedown="this.style.background='var(--surface-2)'" onmouseup="this.style.background='var(--surface)'">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+          <span style="font-size:12px;color:var(--tx3)">or</span>
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+        </div>
+        <div id="modal-phone-section">
+          <div style="display:flex;gap:10px;margin-bottom:14px">
+            <div style="padding:13px 14px;background:var(--surface-2);border-radius:12px;border:1.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0"><span style="font-size:17px">🇮🇳</span><span style="font-size:14px;font-weight:600">+91</span></div>
+            <input type="tel" id="modal-phone" maxlength="10" placeholder="Mobile number" class="input-field" style="flex:1" oninput="checkModalPhoneReady()"/>
+          </div>
+          <button id="modal-send-otp" class="btn btn-primary" onclick="sendModalOTP()" disabled>Send OTP</button>
+        </div>
+        <div id="modal-otp-section" style="display:none">
+          <div style="background:var(--green-l);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;justify-content:space-between"><p style="font-size:13px;color:var(--green)">OTP sent to +91 <span id="modal-display-phone"></span></p><button onclick="document.getElementById('modal-otp-section').style.display='none';document.getElementById('modal-phone-section').style.display='block'" style="font-size:13px;color:var(--accent);font-weight:600;background:none">Edit</button></div>
+          <div class="otp-inputs" id="modal-otp-inputs">
+            <input type="tel" maxlength="1" class="otp-box" oninput="modalOtpInput(this,0)"/>
+            <input type="tel" maxlength="1" class="otp-box" oninput="modalOtpInput(this,1)"/>
+            <input type="tel" maxlength="1" class="otp-box" oninput="modalOtpInput(this,2)"/>
+            <input type="tel" maxlength="1" class="otp-box" oninput="modalOtpInput(this,3)"/>
+            <input type="tel" maxlength="1" class="otp-box" oninput="modalOtpInput(this,4)"/>
+            <input type="tel" maxlength="1" class="otp-box" oninput="modalOtpInput(this,5)"/>
+          </div>
+          <button id="modal-verify-btn" class="btn btn-primary" onclick="verifyModalOTP()" disabled>Verify & Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+</div><!-- /phone-wrap -->
+
+<script>
+/* ── STATE ─────────────────────────────────────────────────────────────── */
+const S = {
+  isLoggedIn: false,
+  location: '',
+  serviceType: 'sitter',
+  petType: 'dog',
+  selectedService: '',
+  startDate: '',
+  endDate: '',
+  nights: 1,
+  selectedSitter: null,
+  selectedAddons: [],
+  addonTotal: 0,
+  baseTotal: 0,
+  finalTotal: 0,
+  hasPetDetails: false,
+  orders: [],
+  pilotMode: false,
+  currentRating: 0,
+}
+
+const SCREEN_HISTORY = []
+let currentScreen = 's-home'
+
+/* ── DATA ──────────────────────────────────────────────────────────────── */
+const SITTERS = [
+  { id:1, initials:'PS', color:'#E8D9C4', name:'Priya Sharma',  verified:true, distance:'1.2', resp:'5 min',  rating:4.9, reviews:87, tags:['Cat specialist','Has garden'], price:899, bio:'Vet tech with 5 years of professional pet care. Every pet gets the same love and attention as my own.', rebooked:34, services:{Sitting:899,Walking:399,'Drop-in':299,Daycare:599}, home:'2BHK Apartment', outdoor:true, otherPets:'1 cat', children:false },
+  { id:2, initials:'AR', color:'#C8D8E8', name:'Arjun Reddy',   verified:true, distance:'2.8', resp:'15 min', rating:4.7, reviews:52, tags:['Dog specialist','Repeat sitter'], price:799, bio:'Passionate dog lover with a spacious home and garden. Your dog will have the time of their life.', rebooked:21, services:{Sitting:799,Walking:349,'Drop-in':249,Daycare:549}, home:'Independent Villa', outdoor:true, otherPets:'None', children:false },
+  { id:3, initials:'MK', color:'#D4C8E8', name:'Meera Krishnan',verified:true, distance:'3.5', resp:'10 min', rating:4.8, reviews:63, tags:['Vet tech','Special needs'], price:999, bio:'Certified vet technician specializing in senior pets and animals with medical needs.', rebooked:28, services:{Sitting:999,Walking:449,'Drop-in':349,Daycare:699}, home:'3BHK Apartment', outdoor:false, otherPets:'None', children:false },
+  { id:4, initials:'RM', color:'#C8E4D4', name:'Rahul Mehta',   verified:true, distance:'4.1', resp:'20 min', rating:4.6, reviews:38, tags:['Budget friendly','Dog walker'], price:699, bio:'Reliable, caring and affordable. Your pet is always in experienced hands.', rebooked:15, services:{Sitting:699,Walking:299,'Drop-in':199,Daycare:449}, home:'2BHK Apartment', outdoor:false, otherPets:'1 dog', children:true },
+]
+
+const ADDONS_DATA = [
+  { id:1, name:'Garden / Outdoor play', price:100, per:'night' },
+  { id:2, name:'Extra cuddle time',     price:150, per:'night' },
+  { id:3, name:'Basic grooming',        price:400, per:'session' },
+  { id:4, name:'Training session',      price:500, per:'session' },
+]
+
+const DOG_SERVICES = [
+  { id:'sitting',  label:'Pet Sitting',    desc:'Sitter comes to your home' },
+  { id:'boarding', label:'Pet Boarding',   desc:'Pet stays at sitter\'s home' },
+  { id:'walking',  label:'Dog Walking',    desc:'Scheduled walks' },
+  { id:'dropin',   label:'Drop-in Visits', desc:'30-min check-ins' },
+  { id:'daycare',  label:'Day Care',       desc:'Daytime only' },
+]
+const CAT_SERVICES = [
+  { id:'sitting',  label:'Pet Sitting',    desc:'Sitter comes to your home' },
+  { id:'boarding', label:'Pet Boarding',   desc:'Pet stays at sitter\'s home' },
+  { id:'dropin',   label:'Drop-in Visits', desc:'30-min check-ins' },
+  { id:'daycare',  label:'Day Care',       desc:'Daytime only' },
+]
+const BOARDING_SERVICES = [
+  { id:'kennel',    label:'Kennel Boarding',   desc:'Dedicated dog facility' },
+  { id:'cattery',   label:'Cattery Boarding',  desc:'Cat-only facility' },
+  { id:'hotel',     label:'Luxury Pet Hotel',  desc:'Premium suites' },
+  { id:'dayboard',  label:'Day Boarding',      desc:'Daytime facility care' },
+  { id:'boardtrain',label:'Board & Train',     desc:'Training during stay' },
+]
+
+/* ── NAVIGATION ────────────────────────────────────────────────────────── */
+function goTo(id) {
+  if (id === currentScreen) return
+  const cur = document.getElementById(currentScreen)
+  const next = document.getElementById(id)
+  if (!next) return
+  cur.classList.remove('active')
+  cur.classList.add('slide-left')
+  next.style.transform = 'translateX(100%)'
+  next.style.opacity = '0'
+  next.classList.add('active')
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      next.style.transition = 'transform .38s cubic-bezier(.4,0,.2,1), opacity .35s ease'
+      next.style.transform = 'translateX(0)'
+      next.style.opacity = '1'
+    })
+  })
+  SCREEN_HISTORY.push(currentScreen)
+  currentScreen = id
+}
+
+function goBack() {
+  if (SCREEN_HISTORY.length === 0) return
+  const prev = SCREEN_HISTORY.pop()
+  const cur = document.getElementById(currentScreen)
+  const prevEl = document.getElementById(prev)
+  if (!prevEl) return
+  cur.classList.remove('active')
+  prevEl.classList.remove('slide-left')
+  prevEl.style.transform = 'translateX(-25%)'
+  prevEl.style.opacity = '0.4'
+  prevEl.classList.add('active')
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      prevEl.style.transition = 'transform .36s cubic-bezier(.4,0,.2,1), opacity .3s ease'
+      prevEl.style.transform = 'translateX(0)'
+      prevEl.style.opacity = '1'
+      cur.style.transition = 'transform .36s cubic-bezier(.4,0,.2,1), opacity .3s ease'
+      cur.style.transform = 'translateX(100%)'
+      cur.style.opacity = '0'
+    })
+  })
+  currentScreen = prev
+}
+
+function switchTab(tab) {
+  const tabMap = { home:'s-home', search:'s-search', orders:'s-orders', chat:'s-chat', profile:'s-profile' }
+  const target = tabMap[tab]
+  if (!document.getElementById(target)) { renderTab(tab); return }
+  SCREEN_HISTORY.length = 0
+  const allScreens = document.querySelectorAll('.screen')
+  allScreens.forEach(s => { s.classList.remove('active','slide-left'); s.style.transform=''; s.style.opacity='' })
+  const el = document.getElementById(target)
+  el.classList.add('active')
+  el.style.transform = 'translateX(0)'
+  el.style.opacity = '1'
+  currentScreen = target
+  updateNavTabs(tab)
+}
+
+function updateNavTabs(active) {
+  document.querySelectorAll('.bottom-nav .nav-tab').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('.nav-label').forEach(l => l.style.color = '')
+}
+
+/* ── MODALS ────────────────────────────────────────────────────────────── */
+function showModal(id) {
+  document.getElementById(id).classList.add('visible')
+}
+function hideModal(id) {
+  document.getElementById(id).classList.remove('visible')
+}
+function hideModalOutside(e, id) {
+  if (e.target === document.getElementById(id)) hideModal(id)
+}
+
+/* ── LOCATION ──────────────────────────────────────────────────────────── */
+function setLocation(loc) {
+  const l = loc === 'current' ? 'Koramangala, Bengaluru' : loc
+  S.location = l
+  const homeEl = document.getElementById('home-location-text')
+  if (homeEl) homeEl.textContent = l
+  const discoverEl = document.getElementById('discover-location')
+  if (discoverEl) discoverEl.textContent = l
+  hideModal('location-modal')
+}
+
+function filterCities(q) {
+  const btns = document.querySelectorAll('.location-city-btn')
+  btns.forEach(b => {
+    b.style.display = !q || b.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'
+  })
+}
+
+/* ── SERVICE SELECTION ─────────────────────────────────────────────────── */
+function setService(type) {
+  S.serviceType = type
+  S.selectedService = ''
+}
+
+function setServiceOption(opt) {
+  S.selectedService = opt
+}
+
+function setPet(type) {
+  S.petType = type
+  S.selectedService = ''
+}
+
+function updateServiceUI() {
+  const sitterBtn = document.getElementById('btn-sitter')
+  const boardingBtn = document.getElementById('btn-boarding')
+  const petSection = document.getElementById('pet-type-section')
+  const serviceSection = document.getElementById('service-options-section')
+
+  sitterBtn.style.borderColor = S.serviceType === 'sitter' ? 'var(--accent)' : 'var(--border)'
+  sitterBtn.style.background = S.serviceType === 'sitter' ? 'var(--accent-l)' : 'var(--surface)'
+  boardingBtn.style.borderColor = S.serviceType === 'boarding' ? 'var(--accent)' : 'var(--border)'
+  boardingBtn.style.background = S.serviceType === 'boarding' ? 'var(--accent-l)' : 'var(--surface)'
+
+  if (S.serviceType === 'sitter') {
+    petSection.style.display = 'block'
+    serviceSection.style.display = 'none'
+    updatePetUI()
+  } else {
+    petSection.style.display = 'none'
+    renderServiceOptions(BOARDING_SERVICES)
+    serviceSection.style.display = 'block'
+  }
+  updateServiceCTA()
+}
+
+function updatePetUI() {
+  const dogBtn = document.getElementById('btn-dog')
+  const catBtn = document.getElementById('btn-cat')
+  dogBtn.style.borderColor = S.petType === 'dog' ? 'var(--accent)' : 'var(--border)'
+  dogBtn.style.background = S.petType === 'dog' ? 'var(--accent-l)' : 'var(--surface)'
+  catBtn.style.borderColor = S.petType === 'cat' ? 'var(--accent)' : 'var(--border)'
+  catBtn.style.background = S.petType === 'cat' ? 'var(--accent-l)' : 'var(--surface)'
+
+  const svcs = S.petType === 'cat' ? CAT_SERVICES : DOG_SERVICES
+  renderServiceOptions(svcs)
+  document.getElementById('service-options-section').style.display = 'block'
+  updateServiceCTA()
+}
+
+function renderServiceOptions(list) {
+  const el = document.getElementById('service-options-list')
+  el.innerHTML = list.map(s => `
+    <button onclick="selectServiceOption('${s.id}',this)" id="svc-${s.id}"
+      style="padding:15px 16px;border-radius:14px;border:2px solid ${S.selectedService===s.id?'var(--accent)':'var(--border)'};background:${S.selectedService===s.id?'var(--accent-l)':'var(--surface)'};display:flex;justify-content:space-between;align-items:center;transition:all .2s;cursor:pointer;width:100%">
+      <div style="text-align:left">
+        <p style="font-family:var(--font-display);font-size:14px;font-weight:700;color:${S.selectedService===s.id?'var(--accent)':'var(--tx)'};margin-bottom:3px">${s.label}</p>
+        <p style="font-size:12px;color:var(--tx2)">${s.desc}</p>
+      </div>
+      ${S.selectedService===s.id?`<div style="width:22px;height:22px;border-radius:11px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg></div>`:''}
+    </button>
+  `).join('')
+}
+
+function selectServiceOption(id, btn) {
+  S.selectedService = id
+  const svcs = S.serviceType === 'boarding' ? BOARDING_SERVICES : (S.petType === 'cat' ? CAT_SERVICES : DOG_SERVICES)
+  renderServiceOptions(svcs)
+  updateServiceCTA()
+}
+
+function updateServiceCTA() {
+  const cta = document.getElementById('service-cta')
+  const ready = S.serviceType && (S.serviceType === 'boarding' || S.petType) && S.selectedService
+  cta.disabled = !ready
+}
+
+/* ── DATES ─────────────────────────────────────────────────────────────── */
+function formatDate(d) {
+  const dt = new Date(d + 'T00:00:00')
+  return dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short' })
+}
+
+function setStartDate(val) {
+  S.startDate = val
+  const el = document.getElementById('start-date-display')
+  const btn = document.getElementById('start-date-btn')
+  if (el) { el.textContent = formatDate(val); el.className='date-value'; btn.classList.add('has-value') }
+  calcNights()
+}
+
+function setEndDate(val) {
+  S.endDate = val
+  const el = document.getElementById('end-date-display')
+  const btn = document.getElementById('end-date-btn')
+  if (el) { el.textContent = formatDate(val); el.className='date-value'; btn.classList.add('has-value') }
+  calcNights()
+}
+
+function calcNights() {
+  if (S.startDate && S.endDate) {
+    S.nights = Math.max(1, Math.round((new Date(S.endDate) - new Date(S.startDate)) / (1000*60*60*24)))
+  }
+}
+
+/* ── CHIPS / PILLS ─────────────────────────────────────────────────────── */
+function toggleChip(id) {
+  const el = document.getElementById(id)
+  el.classList.toggle('active')
+}
+
+function togglePill(btn, group, val) {
+  const parent = btn.parentElement
+  parent.querySelectorAll('.pill').forEach(p => p.classList.remove('active'))
+  btn.classList.add('active')
+}
+
+/* ── SITTER CARDS ──────────────────────────────────────────────────────── */
+function renderSitterCard(s, onClick) {
+  return `
+  <div class="sitter-card" onclick="${onClick}">
+    <div style="position:relative;flex-shrink:0">
+      <div class="avatar" style="width:56px;height:56px;background:${s.color};font-size:18px;font-weight:800;color:var(--tx);border-radius:18px">${s.initials}</div>
+      ${s.verified?`<div class="verify-dot" style="position:absolute;bottom:-2px;right:-2px"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>`:''}
+    </div>
+    <div class="sitter-info">
+      <div class="sitter-name-row">
+        <span class="sitter-name">${s.name}</span>
+      </div>
+      <div class="sitter-sub">${s.distance} km away · Responds in ${s.resp}</div>
+      <div class="sitter-rating">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span style="font-size:13px;font-weight:700;color:var(--tx)">${s.rating}</span>
+        <span style="font-size:12px;color:var(--tx2)">· ${s.reviews} reviews</span>
+      </div>
+      <div class="sitter-tags">${s.tags.map(t=>`<span class="tag tag-neutral">${t}</span>`).join('')}</div>
+    </div>
+    <div class="sitter-price-col">
+      <div></div>
+      <div style="text-align:right">
+        <div class="sitter-price">₹${s.price}</div>
+        <div class="sitter-per">/night</div>
+      </div>
+    </div>
+  </div>`
+}
+
+function renderHomeSitters() {
+  const el = document.getElementById('home-sitters-list')
+  if (!el) return
+  el.innerHTML = SITTERS.slice(0,2).map(s => renderSitterCard(s, `selectSitter(${s.id})`)).join('')
+}
+
+function renderDiscoverSitters() {
+  const el = document.getElementById('discover-sitters-list')
+  if (!el) return
+  el.innerHTML = SITTERS.map(s => renderSitterCard(s, `selectSitter(${s.id})`)).join('')
+  document.getElementById('discover-title').textContent = S.serviceType === 'boarding' ? 'Boarding Facilities' : `Sitters for your ${S.petType === 'cat' ? 'Cat' : 'Dog'}`
+}
+
+function selectSitter(id) {
+  S.selectedSitter = SITTERS.find(s => s.id === id)
+  S.selectedAddons = []
+  S.addonTotal = 0
+  renderSitterProfile()
+  goTo('s-sitter-profile')
+}
+
+/* ── SITTER PROFILE ────────────────────────────────────────────────────── */
+function renderSitterProfile() {
+  const s = S.selectedSitter
+  if (!s) return
+  document.getElementById('sitter-hero-bg').style.background = `linear-gradient(135deg, ${s.color} 0%, #D5C8B8 100%)`
+  document.getElementById('sitter-avatar-lg').style.background = s.color
+  document.getElementById('sitter-avatar-lg').textContent = s.initials
+  document.getElementById('sitter-name-lg').textContent = s.name
+  document.getElementById('sitter-distance-lg').textContent = `${s.distance} km away · Responds in ${s.resp}`
+  document.getElementById('sitter-bio-lg').textContent = s.bio
+  document.getElementById('sitter-rating-lg').textContent = s.rating
+  document.getElementById('sitter-reviews-lg').textContent = `· ${s.reviews} reviews`
+  document.getElementById('sitter-rebook-lg').textContent = `${s.rebooked} pet parents have re-booked`
+
+  // Services
+  document.getElementById('sitter-services-list').innerHTML = Object.entries(s.services).map(([k,v]) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:14px;color:var(--tx)">${k}</span>
+      <span style="font-size:14px;font-weight:700;color:var(--tx)">₹${v}<span style="font-size:12px;color:var(--tx3);font-weight:400">/night</span></span>
+    </div>
+  `).join('')
+
+  // Addons
+  document.getElementById('addon-list').innerHTML = ADDONS_DATA.map(a => `
+    <div class="addon-card ${S.selectedAddons.includes(a.id)?'selected':''}" id="addon-${a.id}" onclick="toggleAddon(${a.id})">
+      <div>
+        <p style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:3px">${a.name}</p>
+        <p style="font-size:12px;color:var(--tx2)">₹${a.price}/${a.per}</p>
+      </div>
+      <div class="addon-check ${S.selectedAddons.includes(a.id)?'on':'off'}" id="addon-check-${a.id}">
+        ${S.selectedAddons.includes(a.id)?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`:`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`}
+      </div>
+    </div>
+  `).join('')
+
+  // Home details
+  document.getElementById('sitter-home-details').innerHTML = [
+    { label:'Home Type', val:s.home },
+    { label:'Outdoor Space', val:s.outdoor?'Yes':'No' },
+    { label:'Other Pets', val:s.otherPets },
+    { label:'Children', val:s.children?'Present':'None' }
+  ].map(d=>`
+    <div style="background:var(--surface-2);border-radius:12px;padding:12px 14px">
+      <p style="font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);font-weight:700;margin-bottom:4px">${d.label}</p>
+      <p style="font-size:13px;font-weight:600;color:var(--tx)">${d.val}</p>
+    </div>
+  `).join('')
+
+  updateProfileTotal()
+}
+
+function toggleAddon(id) {
+  const s = S.selectedSitter
+  const addon = ADDONS_DATA.find(a => a.id === id)
+  if (!addon) return
+  if (S.selectedAddons.includes(id)) {
+    S.selectedAddons = S.selectedAddons.filter(x => x !== id)
+    S.addonTotal -= addon.per === 'night' ? addon.price * S.nights : addon.price
+  } else {
+    S.selectedAddons.push(id)
+    S.addonTotal += addon.per === 'night' ? addon.price * S.nights : addon.price
+  }
+  const card = document.getElementById(`addon-${id}`)
+  const check = document.getElementById(`addon-check-${id}`)
+  if (S.selectedAddons.includes(id)) {
+    card.classList.add('selected')
+    check.classList.add('on'); check.classList.remove('off')
+    check.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`
+  } else {
+    card.classList.remove('selected')
+    check.classList.remove('on'); check.classList.add('off')
+    check.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`
+  }
+  updateProfileTotal()
+}
+
+function updateProfileTotal() {
+  const s = S.selectedSitter
+  if (!s) return
+  S.baseTotal = s.price * S.nights
+  const total = S.baseTotal + S.addonTotal
+  document.getElementById('profile-total').textContent = `₹${total.toLocaleString('en-IN')}`
+  document.getElementById('nights-label').textContent = `${S.nights} night${S.nights>1?'s':''}`
+}
+
+function proceedFromProfile() {
+  if (!S.isLoggedIn) {
+    showModal('login-modal')
+  } else {
+    prepareBilling()
+    goTo('s-billing')
+  }
+}
+
+/* ── AUTH ──────────────────────────────────────────────────────────────── */
+function checkPhoneReady() {
+  const v = document.getElementById('login-phone').value
+  document.getElementById('send-otp-btn').disabled = v.length < 10
+}
+
+function sendOTP() {
+  const phone = document.getElementById('login-phone').value
+  document.getElementById('display-phone').textContent = phone
+  document.getElementById('login-phone-section').style.display = 'none'
+  document.getElementById('login-otp-section').style.display = 'block'
+}
+
+function otpInput(el, i) {
+  if(el.value) { el.classList.add('filled'); const next = el.parentElement.children[i+1]; if(next) next.focus() }
+  else { el.classList.remove('filled'); const prev = el.parentElement.children[i-1]; if(prev) prev.focus() }
+  const boxes = document.querySelectorAll('#login-otp-section .otp-box')
+  const complete = [...boxes].every(b => b.value)
+  document.getElementById('verify-btn').disabled = !complete
+}
+
+function verifyOTP() {
+  finishLogin()
+  goTo('s-home')
+}
+
+function checkModalPhoneReady() {
+  const v = document.getElementById('modal-phone').value
+  document.getElementById('modal-send-otp').disabled = v.length < 10
+}
+
+function sendModalOTP() {
+  const phone = document.getElementById('modal-phone').value
+  document.getElementById('modal-display-phone').textContent = phone
+  document.getElementById('modal-phone-section').style.display = 'none'
+  document.getElementById('modal-otp-section').style.display = 'block'
+}
+
+function modalOtpInput(el, i) {
+  if(el.value) { el.classList.add('filled'); const next = el.parentElement.children[i+1]; if(next) next.focus() }
+  else { el.classList.remove('filled'); const prev = el.parentElement.children[i-1]; if(prev) prev.focus() }
+  const boxes = document.querySelectorAll('#modal-otp-inputs .otp-box')
+  const complete = [...boxes].every(b => b.value)
+  document.getElementById('modal-verify-btn').disabled = !complete
+}
+
+function verifyModalOTP() {
+  hideModal('login-modal')
+  finishLogin()
+  prepareBilling()
+  goTo('s-billing')
+}
+
+function loginWithGoogle() {
+  hideModal('login-modal')
+  finishLogin()
+  if (currentScreen === 's-sitter-profile') {
+    prepareBilling()
+    setTimeout(() => goTo('s-billing'), 100)
+  } else {
+    goTo('s-home')
+  }
+}
+
+function finishLogin() {
+  S.isLoggedIn = true
+  renderHomeLoggedIn()
+}
+
+/* ── BILLING ───────────────────────────────────────────────────────────── */
+function prepareBilling() {
+  const s = S.selectedSitter
+  if (!s) return
+  document.getElementById('billing-avatar').style.background = s.color
+  document.getElementById('billing-avatar').textContent = s.initials
+  document.getElementById('billing-name').textContent = s.name
+  document.getElementById('billing-service-desc').textContent = `Pet Sitting · ${S.nights} night${S.nights>1?'s':''}`
+  const sd = S.startDate ? formatDate(S.startDate) : 'TBD'
+  const ed = S.endDate ? formatDate(S.endDate) : 'TBD'
+  document.getElementById('billing-dates').textContent = `${sd} → ${ed}`
+  const base = s.price * S.nights
+  const SERVICE_FEE = 149
+  const PEAK = 100
+  const GST = Math.round((base + S.addonTotal + SERVICE_FEE + PEAK) * 0.18)
+  S.finalTotal = base + S.addonTotal + SERVICE_FEE + PEAK + GST
+  const rows = [
+    { label:`Base rate (${S.nights} × ₹${s.price})`, val:`₹${base.toLocaleString('en-IN')}` },
+    ...(S.addonTotal > 0 ? [{ label:'Add-ons', val:`₹${S.addonTotal.toLocaleString('en-IN')}` }] : []),
+    { label:'Peak slot charge', val:'+₹100', accent:true },
+    { label:'Service fee', val:`₹${SERVICE_FEE}` },
+    { label:'GST (18%)', val:`₹${GST.toLocaleString('en-IN')}` },
+  ]
+  document.getElementById('billing-breakdown').innerHTML = rows.map(r=>`
+    <div class="price-row">
+      <span style="font-size:14px;color:var(--tx2)">${r.label}</span>
+      <span style="font-size:14px;font-weight:600;color:${r.accent?'var(--accent)':'var(--tx)'}">${r.val}</span>
+    </div>
+  `).join('')
+  document.getElementById('billing-total').textContent = `₹${S.finalTotal.toLocaleString('en-IN')}`
+  document.getElementById('payment-total-display').textContent = `₹${S.finalTotal.toLocaleString('en-IN')}`
+  document.getElementById('pay-amount').textContent = `₹${S.finalTotal.toLocaleString('en-IN')}`
+  document.getElementById('pay-btn').textContent = `Pay ₹${S.finalTotal.toLocaleString('en-IN')}`
+  const careNameEl = document.getElementById('care-sitter-name')
+  if (careNameEl) careNameEl.textContent = s.name.split(' ')[0]
+}
+
+function selectPayment(row) {
+  document.querySelectorAll('.payment-method-row').forEach(r => {
+    r.style.background = 'var(--surface)'
+    const dot = r.querySelector('div:last-child')
+    if(dot) { dot.style.borderColor='var(--border)'; dot.innerHTML='' }
+  })
+  row.style.background = 'var(--accent-l)'
+  const dot = row.querySelector('div:last-child')
+  if(dot) { dot.style.borderColor='var(--accent)'; dot.innerHTML='<div style="width:10px;height:10px;border-radius:5px;background:var(--accent)"></div>' }
+}
+
+function makePayment() {
+  const order = {
+    id: Date.now(),
+    sitter: S.selectedSitter,
+    service: 'Pet Sitting',
+    nights: S.nights,
+    startDate: S.startDate,
+    endDate: S.endDate,
+    total: S.finalTotal,
+    status: 'confirmed',
+    petFilled: false,
+    hasPendingReview: false,
+  }
+  S.orders.push(order)
+  renderAllSetScreen()
+  goTo('s-care-details')
+}
+
+/* ── ALL SET ───────────────────────────────────────────────────────────── */
+function renderAllSetScreen() {
+  const s = S.selectedSitter
+  const allsetSub = document.getElementById('allset-sub')
+  if(allsetSub) allsetSub.textContent = `${s ? s.name : 'Your sitter'} will care for your pet`
+  const items = ['Food and treats packed / stocked','Medication with written instructions ready','Favourite toy or blanket kept out','Key handover arranged with sitter']
+  const list = document.getElementById('checklist-items')
+  if(list) list.innerHTML = items.map((item,i) => `
+    <button onclick="toggleChecklist(this,${i})" style="display:flex;gap:12px;align-items:center;background:none;border:none;cursor:pointer;text-align:left;font-family:var(--font-body);width:100%;padding:0">
+      <div id="check-${i}" style="width:22px;height:22px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s"></div>
+      <span style="font-size:14px;color:var(--tx)">${item}</span>
+    </button>
+  `).join('')
+}
+
+function toggleChecklist(btn, i) {
+  const box = document.getElementById(`check-${i}`)
+  const span = btn.querySelector('span')
+  const filled = box.innerHTML !== ''
+  if (!filled) {
+    box.style.background = 'var(--green)'
+    box.style.borderColor = 'var(--green)'
+    box.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`
+    span.style.textDecoration = 'line-through'
+    span.style.color = 'var(--tx3)'
+  } else {
+    box.style.background = ''
+    box.style.borderColor = 'var(--border)'
+    box.innerHTML = ''
+    span.style.textDecoration = 'none'
+    span.style.color = 'var(--tx)'
+  }
+}
+
+function completeBooking() {
+  renderHomeLoggedIn()
+  SCREEN_HISTORY.length = 0
+  switchTab('home')
+}
+
+/* ── HOME LOGGED IN ────────────────────────────────────────────────────── */
+function renderHomeLoggedIn() {
+  renderHomeSitters()
+  // Add pet trigger if not filled
+  if (S.isLoggedIn && !S.hasPetDetails && S.orders.length > 0) {
+    const existing = document.getElementById('pet-trigger-home')
+    if (!existing) {
+      const petsSection = document.querySelector('#s-home .screen-body')
+      const trigger = document.createElement('div')
+      trigger.style.cssText = 'padding:0 20px;margin-top:-4px;margin-bottom:8px'
+      trigger.innerHTML = `
+        <div class="pet-trigger" onclick="goTo('s-pet-details')" id="pet-trigger-home">
+          <div style="width:40px;height:40px;background:var(--red-m);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div style="flex:1">
+            <p style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:2px">Pet details required</p>
+            <p style="font-size:12px;color:var(--tx2)">Tap to fill in your pet's information to complete your booking</p>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      `
+      petsSection.insertBefore(trigger, petsSection.firstChild.nextSibling)
+    }
+  }
+}
+
+function savePetDetails() {
+  S.hasPetDetails = true
+  S.orders.forEach(o => o.petFilled = true)
+  const trigger = document.getElementById('pet-trigger-home')
+  if (trigger) trigger.parentElement.remove()
+  renderOrdersTab()
+  switchTab('home')
+}
+
+/* ── ORDERS TAB ────────────────────────────────────────────────────────── */
+function renderTab(tab) {
+  if (tab === 'orders') renderOrdersTab()
+  else if (tab === 'search') renderSearchTab()
+  else if (tab === 'chat') renderChatTab()
+  else if (tab === 'profile') renderProfileTab()
+}
+
+function renderOrdersTab() {
+  let screen = document.getElementById('s-orders')
+  if (!screen) {
+    screen = document.createElement('div')
+    screen.id = 's-orders'
+    screen.className = 'screen'
+    document.getElementById('app').appendChild(screen)
+  }
+  const hasBadge = S.orders.some(o => !o.petFilled)
+  screen.innerHTML = `
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div style="padding:8px 20px 16px;display:flex;justify-content:space-between;align-items:center">
+        <h1 style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--tx);letter-spacing:-.4px">My Orders</h1>
+        <div style="background:var(--surface-2);border-radius:100px;padding:6px 14px;display:flex;align-items:center;gap:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span style="font-size:13px;font-weight:500;color:var(--tx2)">Filter</span>
+        </div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:14px 20px;padding-bottom:80px">
+      ${S.orders.length === 0 ? `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center">
+          <div style="width:72px;height:72px;background:var(--surface-2);border-radius:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <h3 style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--tx);margin-bottom:8px">No orders yet</h3>
+          <p style="font-size:14px;color:var(--tx2);margin-bottom:20px">Book a sitter to see your orders here</p>
+          <button class="btn btn-primary btn-sm" onclick="goTo('s-service-select')">Book now</button>
+        </div>
+      ` : S.orders.map(order => `
+        <div class="order-card" onclick="${order.status==='in_progress'?'goTo(\'s-tracking\')':order.hasPendingReview?'goTo(\'s-review\')':''}">
+          <div class="order-header">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="avatar" style="width:46px;height:46px;background:${order.sitter.color};font-size:16px;font-weight:700;border-radius:14px">${order.sitter.initials}</div>
+              <div>
+                <p style="font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--tx);margin-bottom:3px">${order.sitter.name}</p>
+                <p style="font-size:12px;color:var(--tx2)">${order.service} · ${order.nights} night${order.nights>1?'s':''}</p>
+                <p style="font-size:12px;color:var(--tx3)">${order.startDate ? formatDate(order.startDate) : 'TBD'}</p>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <span class="tag ${order.status==='confirmed'?'tag-orange':order.status==='in_progress'?'tag-green':order.status==='completed'?'tag-neutral':'tag-neutral'}">${order.status==='confirmed'?'Confirmed':order.status==='in_progress'?'In Progress':order.status==='completed'?'Completed':'Pending'}</span>
+              <p style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--tx);margin-top:8px">₹${order.total.toLocaleString('en-IN')}</p>
+            </div>
+          </div>
+          ${!order.petFilled ? `
+            <button onclick="event.stopPropagation();goTo('s-pet-details')" style="width:100%;padding:10px 14px;border-radius:10px;background:var(--red-l);border:1.5px solid var(--red-m);display:flex;align-items:center;gap:10px;cursor:pointer;font-family:var(--font-body)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span style="font-size:13px;font-weight:700;color:var(--red);flex:1;text-align:left">Fill pet details</span>
+              <span class="tag tag-red">Required</span>
+            </button>
+          ` : order.hasPendingReview ? `
+            <button onclick="event.stopPropagation();goTo('s-review')" style="width:100%;padding:10px 14px;border-radius:10px;background:var(--gold-l);border:1.5px solid #F5D68A;display:flex;align-items:center;gap:10px;cursor:pointer;font-family:var(--font-body)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span style="font-size:13px;font-weight:700;color:var(--gold);flex:1;text-align:left">Leave a review</span>
+              <span class="tag tag-gold">Pending</span>
+            </button>
+          ` : ''}
+        </div>
+      `).join('')}
+    </div>
+    ${renderBottomNavHTML('orders')}
+  `
+  switchTab('orders')
+}
+
+/* ── SEARCH TAB ────────────────────────────────────────────────────────── */
+function renderSearchTab() {
+  let screen = document.getElementById('s-search')
+  if (!screen) { screen = document.createElement('div'); screen.id = 's-search'; screen.className = 'screen'; document.getElementById('app').appendChild(screen) }
+  const services = [
+    { name:'Pet Sitting',    desc:'Sitter comes to your home',    color:'#FDF1EC', icon:'sitting' },
+    { name:'Pet Boarding',   desc:'Your pet stays at sitter\'s',  color:'#EBF7F1', icon:'boarding' },
+    { name:'Dog Walking',    desc:'Scheduled daily walks',        color:'#EFF6FF', icon:'walking' },
+    { name:'Drop-in Visits', desc:'30-min welfare check-ins',     color:'#FEF8EC', icon:'dropin' },
+    { name:'Day Care',       desc:'Full-day care, daytime only',  color:'#F5EFF9', icon:'daycare' },
+    { name:'Kennel Boarding',desc:'Dedicated kennel facilities',  color:'#FDF1EC', icon:'kennel' },
+    { name:'Luxury Pet Hotel',desc:'Premium suites & services',   color:'#FEF8EC', icon:'hotel' },
+    { name:'Board & Train',  desc:'Training during boarding',     color:'#EBF7F1', icon:'train' },
+  ]
+  screen.innerHTML = `
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div style="padding:8px 20px 16px">
+        <h1 style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--tx);letter-spacing:-.4px;margin-bottom:14px">Browse Services</h1>
+        <div style="position:relative">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2" style="position:absolute;left:14px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input placeholder="Search service or sitter..." class="input-field" style="padding-left:42px;background:var(--surface-2);border-color:transparent"/>
+        </div>
+      </div>
+    </div>
+    <div class="screen-body" style="padding:14px 20px 80px">
+      <p class="section-label" style="margin-bottom:14px">All services</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${services.map(s => `
+          <div class="service-browse-card" onclick="setService('sitter');goTo('s-discover')">
+            <div class="service-browse-img" style="background:${s.color};display:flex;align-items:center;justify-content:center">
+              <svg width="40" height="40" viewBox="0 0 32 32" fill="none"><ellipse cx="8" cy="7" rx="3.5" ry="4.8" fill="var(--accent)" opacity=".3" transform="rotate(-30 8 7)"/><ellipse cx="24" cy="7" rx="3.5" ry="4.8" fill="var(--accent)" opacity=".3" transform="rotate(30 24 7)"/><ellipse cx="4" cy="18" rx="3.2" ry="4.4" fill="var(--accent)" opacity=".3" transform="rotate(-10 4 18)"/><ellipse cx="28" cy="18" rx="3.2" ry="4.4" fill="var(--accent)" opacity=".3" transform="rotate(10 28 18)"/><ellipse cx="16" cy="22" rx="9" ry="6.5" fill="var(--accent)" opacity=".5"/></svg>
+            </div>
+            <div class="service-browse-body">
+              <p style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:3px">${s.name}</p>
+              <p style="font-size:11px;color:var(--tx2)">${s.desc}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top:24px">
+        <p class="section-label" style="margin-bottom:14px">Top sitters this week</p>
+        ${SITTERS.map(s => renderSitterCard(s, `selectSitter(${s.id})`)).join('')}
+      </div>
+    </div>
+    ${renderBottomNavHTML('search')}
+  `
+  switchTab('search')
+}
+
+/* ── CHAT TAB ──────────────────────────────────────────────────────────── */
+function renderChatTab() {
+  let screen = document.getElementById('s-chat')
+  if (!screen) { screen = document.createElement('div'); screen.id = 's-chat'; screen.className = 'screen'; document.getElementById('app').appendChild(screen) }
+  screen.innerHTML = `
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+      <div style="padding:8px 20px 16px"><h1 style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--tx);letter-spacing:-.4px">Messages</h1></div>
+    </div>
+    <div class="screen-body" style="padding:14px 20px;padding-bottom:80px">
+      ${S.orders.length === 0 ? `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 0;text-align:center">
+          <div style="width:72px;height:72px;background:var(--surface-2);border-radius:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+          <h3 style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--tx);margin-bottom:8px">No messages yet</h3>
+          <p style="font-size:14px;color:var(--tx2)">Messages with your sitters will appear here after booking</p>
+        </div>
+      ` : S.orders.map(order => `
+        <div onclick="goTo('s-chat-detail')" style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;align-items:center" onmousedown="this.style.background='var(--surface-2)'" onmouseup="this.style.background=''">
+          <div style="position:relative;flex-shrink:0">
+            <div class="avatar" style="width:50px;height:50px;background:${order.sitter.color};font-size:18px;font-weight:700;border-radius:16px">${order.sitter.initials}</div>
+            ${order.status==='in_progress'?`<div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:var(--green);border-radius:6px;border:2px solid var(--surface)"></div>`:''}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+              <span style="font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--tx)">${order.sitter.name}</span>
+              <span style="font-size:11px;color:var(--tx3)">10:30 AM</span>
+            </div>
+            <p style="font-size:13px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${order.status==='completed'?'Service completed — chat closed':'Hi! Bruno seems really happy and just finished his morning walk.'}</p>
+          </div>
+        </div>
+        ${order.status==='completed'?`
+          <div style="background:var(--surface-2);border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:center;margin-top:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <span style="font-size:12px;color:var(--tx3)">Chat closed — service completed</span>
+          </div>
+        `:''}
+      `).join('')}
+    </div>
+    ${renderBottomNavHTML('chat')}
+  `
+  switchTab('chat')
+}
+
+/* ── PROFILE TAB ───────────────────────────────────────────────────────── */
+function renderProfileTab() {
+  let screen = document.getElementById('s-profile')
+  if (!screen) { screen = document.createElement('div'); screen.id = 's-profile'; screen.className = 'screen'; document.getElementById('app').appendChild(screen) }
+  screen.innerHTML = `
+    <div style="background:var(--surface)">
+      <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><svg width="17" height="11" fill="none"><rect x=".5" y=".5" width="14" height="10" rx="2.5" stroke="var(--tx)"/><rect x="2" y="2" width="9" height="7" fill="var(--tx)" rx="1.5"/><path d="M15.5 3.5v4a2 2 0 000-4z" fill="var(--tx)"/></svg></div></div>
+    </div>
+    <div class="screen-body" style="padding-bottom:80px">
+      <!-- Profile Header -->
+      <div style="background:linear-gradient(150deg,#1C1814 0%,#2D1E12 100%);padding:28px 20px 32px;position:relative;overflow:hidden">
+        <div style="position:absolute;right:-20px;top:-20px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(232,84,25,.25) 0%,transparent 70%)"></div>
+        <div style="display:flex;gap:16px;align-items:center;position:relative">
+          <div class="avatar" style="width:64px;height:64px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-d) 100%);font-size:24px;font-weight:800;color:#fff;border-radius:20px;border:3px solid rgba(255,255,255,.15)">${S.isLoggedIn?'S':'?'}</div>
+          <div>
+            <p style="font-family:var(--font-display);font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">${S.isLoggedIn?'Shruti Patel':'Guest'}</p>
+            <p style="font-size:13px;color:rgba(255,255,255,.5)">${S.isLoggedIn?'+91 98765 43210':'Sign in for full access'}</p>
+            ${S.isLoggedIn?`<div style="margin-top:8px;display:flex;gap:8px"><span class="tag" style="background:rgba(232,84,25,.2);color:var(--accent)">Free Plan</span>${S.orders.length>0?`<span class="tag" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)">${S.orders.length} order${S.orders.length>1?'s':''}</span>`:''}
+            </div>`:''}
+          </div>
+        </div>
+        ${!S.isLoggedIn?`<button onclick="goTo('s-login-screen')" class="btn btn-primary" style="margin-top:16px;position:relative">Sign In / Register</button>`:''}
+      </div>
+
+      <div style="padding:20px 20px 0">
+        <!-- Premium upsell -->
+        <div style="background:linear-gradient(135deg,#FDF1EC 0%,#FDEEE6 100%);border-radius:var(--r-lg);padding:18px;margin-bottom:20px;border:1.5px solid var(--accent-m)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <p style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--tx)">Upgrade to Premium</p>
+            <span class="tag tag-orange">Save ₹800/booking</span>
+          </div>
+          <p style="font-size:13px;color:var(--tx2);margin-bottom:12px;line-height:1.6">Lower service fees, GPS tracking, PetGuard insurance, and priority support.</p>
+          <button class="btn btn-primary btn-sm" style="width:auto">Get Premium · ₹299/mo</button>
+        </div>
+
+        <!-- My Pets -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="section-header">
+            <span class="section-title" style="font-size:16px">My Pets</span>
+            <button onclick="goTo('s-pet-details')" class="view-all">Add pet</button>
+          </div>
+          ${S.hasPetDetails ? `
+            <div style="display:flex;gap:12px;align-items:center;padding:12px 0">
+              <div style="width:48px;height:48px;background:var(--surface-2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px">🐕</div>
+              <div><p style="font-weight:700;font-size:15px;color:var(--tx)">Bruno</p><p style="font-size:12px;color:var(--tx2)">Dog · Labrador · Adult</p></div>
+              <div class="verify-dot" style="margin-left:auto;position:static"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+          ` : `<p style="font-size:13px;color:var(--tx3);padding:10px 0">No pets added yet</p>`}
+        </div>
+
+        <!-- Settings rows -->
+        <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px">
+          ${[
+            { icon:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>', label:'Edit Profile' },
+            { icon:'<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>', label:'Saved Payment Methods' },
+            { icon:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>', label:'Notification Settings' },
+            { icon:'<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93L17.66 6.34M4.93 4.93L6.34 6.34M4.93 19.07L6.34 17.66M19.07 19.07L17.66 17.66M2 12h2M20 12h2M12 2v2M12 20v2"/>', label:'Refer a Friend' },
+            { icon:'<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>', label:'Help & Support' },
+          ].map((r,i) => `
+            <div class="profile-row" style="padding:14px 16px;cursor:pointer" onmousedown="this.style.background='var(--surface-2)'" onmouseup="this.style.background=''">
+              <div style="width:36px;height:36px;background:var(--surface-2);border-radius:10px;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2">${r.icon}</svg></div>
+              <span style="flex:1;font-size:14px;font-weight:500;color:var(--tx)">${r.label}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          `).join('')}
+        </div>
+
+        ${S.isLoggedIn?`<button style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--red-m);background:var(--red-l);color:var(--red);font-size:14px;font-weight:600;font-family:var(--font-body);cursor:pointer;margin-bottom:16px">Sign Out</button>`:''}
+      </div>
+    </div>
+    ${renderBottomNavHTML('profile')}
+  `
+  switchTab('profile')
+}
+
+function renderBottomNavHTML(active) {
+  const tabs = [
+    { id:'home', label:'Home', icon:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>' },
+    { id:'search', label:'Search', icon:'<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>' },
+    { id:'orders', label:'Orders', icon:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+    { id:'chat', label:'Chat', icon:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
+    { id:'profile', label:'Profile', icon:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>' },
+  ]
+  return `<div class="bottom-nav">
+    ${tabs.map(t => `
+      <button class="nav-tab ${active===t.id?'active':''}" onclick="renderTab('${t.id}')">
+        <div class="nav-icon${S.orders.length>0&&!S.orders.every(o=>o.petFilled)&&t.id==='orders'?'':''}" style="position:relative">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${active===t.id?'var(--accent)':'var(--tx3)'}" stroke-width="${active===t.id?'2.5':'2'}">${t.icon}</svg>
+          ${S.orders.some(o=>!o.petFilled)&&t.id==='orders'?`<div class="nav-badge"></div>`:''}
+        </div>
+        <span class="nav-label" style="color:${active===t.id?'var(--accent)':'var(--tx3)'}">${t.label}</span>
+      </button>
+    `).join('')}
+  </div>`
+}
+
+/* ── TRACKING ──────────────────────────────────────────────────────────── */
+function renderTrackingScreen() {
+  const steps = [
+    { label:'Booking Confirmed', sub:'Payment received · Care instructions sent', done:true },
+    { label:'Sitter Arrived', sub:'Arjun checked in at your home', done:true },
+    { label:'Service In Progress', sub:'Caring for your pet right now', done:false, active:true },
+    { label:'Service Completed', sub:'Your pet is all done!', done:false },
+  ]
+  document.getElementById('tracking-steps').innerHTML = steps.map((s,i) => `
+    <div style="display:flex;gap:14px;align-items:flex-start${i<steps.length-1?';margin-bottom:4px':''}">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+        <div style="width:28px;height:28px;border-radius:14px;background:${s.done?'var(--green)':s.active?'var(--accent)':'var(--border)'};display:flex;align-items:center;justify-content:center">
+          ${s.done?`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`:s.active?`<div style="width:10px;height:10px;border-radius:5px;background:#fff"></div>`:''}
+        </div>
+        ${i<steps.length-1?`<div style="width:2px;height:28px;background:${s.done?'var(--green)':'var(--border)'};margin:4px 0"></div>`:''}
+      </div>
+      <div style="padding-bottom:${i<steps.length-1?'4px':'0'}">
+        <p style="font-weight:700;font-size:14px;color:${s.active?'var(--accent)':s.done?'var(--tx)':'var(--tx3)'};margin-bottom:2px">${s.label}${s.active?' · Now':''}</p>
+        <p style="font-size:12px;color:var(--tx2)">${s.sub}</p>
+      </div>
+    </div>
+  `).join('')
+
+  const timeline = [
+    { time:'8:00 AM', label:'Breakfast', note:'Ate all food enthusiastically' },
+    { time:'10:00 AM', label:'Morning Walk', note:'1.2 km walk at the park' },
+    { time:'12:00 PM', label:'Nap Time', note:'Resting on favourite bed' },
+    { time:'2:00 PM', label:'Photo Update', note:'Looking happy and relaxed' },
+    { time:'3:30 PM', label:'Playtime', note:'Fetch session in the garden' },
+  ]
+  document.getElementById('timeline-items').innerHTML = timeline.map((t,i) => `
+    <div style="display:flex;gap:14px;margin-bottom:${i<timeline.length-1?'14px':'0'}">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+        <div style="width:8px;height:8px;border-radius:4px;background:var(--accent);margin-top:4px"></div>
+        ${i<timeline.length-1?`<div style="width:2px;flex:1;background:var(--border);margin:6px 0;min-height:20px"></div>`:''}
+      </div>
+      <div>
+        <div style="display:flex;gap:8px;align-items:baseline">
+          <span style="font-size:11px;color:var(--tx3)">${t.time}</span>
+          <span style="font-size:14px;font-weight:600;color:var(--tx)">${t.label}</span>
+        </div>
+        <p style="font-size:13px;color:var(--tx2);margin-top:2px">${t.note}</p>
+      </div>
+    </div>
+  `).join('')
+}
+
+function completeService() {
+  if (S.orders.length > 0) {
+    S.orders[S.orders.length-1].status = 'completed'
+    S.orders[S.orders.length-1].hasPendingReview = true
+  }
+  goTo('s-review')
+}
+
+/* ── REVIEW ────────────────────────────────────────────────────────────── */
+let currentRating = 0
+function setRating(n) {
+  currentRating = n
+  const stars = document.querySelectorAll('#review-stars .review-star svg')
+  stars.forEach((s,i) => {
+    s.setAttribute('fill', i < n ? '#F59E0B' : 'none')
+  })
+  document.getElementById('review-submit-btn').disabled = false
+}
+
+function selectTip(btn, amount) {
+  document.querySelectorAll('#tip-btns .pill').forEach(p => p.classList.remove('active'))
+  btn.classList.add('active')
+}
+
+function submitReview() {
+  if (S.orders.length > 0) S.orders[S.orders.length-1].hasPendingReview = false
+  switchTab('home')
+}
+
+/* ── CHAT ──────────────────────────────────────────────────────────────── */
+function sendChatMessage() {
+  const input = document.getElementById('chat-input')
+  const msg = input.value.trim()
+  if (!msg) return
+  const container = document.getElementById('chat-messages')
+  const bubble = document.createElement('div')
+  bubble.className = 'chat-bubble out'
+  bubble.textContent = msg
+  container.appendChild(bubble)
+  const time = document.createElement('span')
+  time.className = 'chat-time out'
+  time.textContent = 'Just now'
+  container.appendChild(time)
+  input.value = ''
+  container.scrollTop = container.scrollHeight
+  setTimeout(() => {
+    const reply = document.createElement('div')
+    reply.className = 'chat-bubble in'
+    reply.textContent = 'Got it! I\'ll keep you updated.'
+    container.appendChild(reply)
+    container.scrollTop = container.scrollHeight
+  }, 1200)
+}
+
+/* ── INIT ──────────────────────────────────────────────────────────────── */
+window.addEventListener('load', () => {
+  renderHomeSitters()
+  renderTrackingScreen()
+  // Show location modal after brief delay
+  setTimeout(() => showModal('location-modal'), 800)
+})
+</script>
+</body>
+</html>
